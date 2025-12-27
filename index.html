@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui">
+<title>主页</title>
+<style>
+:root{
+  --bg:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);
+  --fg:#1e293b;
+  --accent:#6366f1;
+  --glass:rgba(255,255,255,.65);
+  --shadow:0 8px 32px rgba(0,0,0,.1);
+  --radius:24px;
+  --trans:.3s cubic-bezier(.4,0,.2,1);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
+    --fg:#e2e8f0;
+    --glass:rgba(30,41,59,.7);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'PingFang SC',sans-serif}
+body{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);transition:background var(--trans)}
+a{color:inherit;text-decoration:none}
+
+.search_part{display:flex;flex-direction:column;align-items:center;width:90%;max-width:520px;animation:fadeIn .8s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+.logo{margin-bottom:28px;transition:transform var(--trans)}
+.logo img{width:96px;height:96px;object-fit:cover;object-position:center;border-radius:50%;display:block}
+.logo:active{transform:scale(.92)}
+
+.search_bar{
+  display:flex;
+  align-items:stretch;
+  width:100%;
+  background:var(--glass);
+  backdrop-filter:blur(20px);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.search_bar input{
+  order:1;
+  flex:1 1 auto;
+  border:0;
+  padding:16px 20px;
+  font-size:16px;
+  background:transparent;
+  color:var(--fg);
+  outline:0;
+}
+.search_bar button{
+  order:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 16px;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  transition:background var(--trans);
+  height:100%;
+}
+.search_bar button:hover{background:rgba(99,102,241,.08)}
+.search_bar .icon{width:20px;height:20px;border:2px solid var(--accent);border-radius:50%;position:relative}
+.search_bar .icon::after{content:'';position:absolute;width:8px;height:2px;background:var(--accent);right:-6px;bottom:-2px;border-radius:2px;transform:rotate(45deg)}
+
+.opSug_wpr{background:var(--glass);backdrop-filter:blur(20px);border-radius:var(--radius);box-shadow:var(--shadow);margin-top:8px;max-height:200px;overflow:auto;display:none}
+.opSug_wpr table{width:100%;border-collapse:collapse}
+.sug-item{padding:14px 20px;font-size:15px;cursor:pointer;transition:background var(--trans)}
+.sug-item:hover{background:rgba(99,102,241,.08)}
+.sug-item:active{background:rgba(99,102,241,.15)}
+
+#gesture-indicator{position:fixed;top:0;left:0;right:0;height:60px;z-index:1}
+</style>
+</head>
+<body>
+<div class="search_part">
+  <a class="logo" href="https://github.com/Ancylx" target="_blank" title="书签">
+    <img src="https://avatars.githubusercontent.com/u/183050286" alt="logo">
+  </a>
+  <form class="search_bar" onsubmit="return search()" title="搜索">
+    <input id="search_input" type="text" autocomplete="off" placeholder="搜索或输入网址">
+    <button id="search_submit" aria-label="搜索"><div class="search icon"></div></button>
+  </form>
+  <div id="sug_wpr" class="opSug_wpr"><table><tbody id="sug_tbody"></tbody></table></div>
+</div>
+
+<div id="gesture-indicator"></div>
+
+<script>
+function showButton(){document.getElementById("search_submit").style.display="flex"}
+function hideButton(){if(!document.getElementById("search_input").value)document.getElementById("search_submit").style.display="none"}
+function search(){const a=document.getElementById("search_input");if(a.value){try{location.href='via://search?q='+encodeURIComponent(a.value)}catch{}a.value="";hideButton();document.activeElement.blur()}return!1}
+function fadeIn(a){let b=Math.max(.05,parseFloat(a.style.opacity||0)),d=setInterval(()=>{b>=1&&clearInterval(d);a.style.opacity=Math.min(1,b);b+=.1*b},6)}
+function isGestureDisabled(){return document.activeElement&&document.activeElement.id==="search_input"||window.via&&!window.via.cmd(515)?!0:0!=(document.documentElement.scrollTop||document.body.scrollTop)}
+function initGesture(f){let c=!1,h=0,b=0,g=0,a=0;f.addEventListener("touchstart",e=>{c=isGestureDisabled();if(!c){h=e.touches[0].screenY;a=b=0;document.body.style.overflow="visible"}},{passive:!0});f.addEventListener("touchmove",e=>{if(!c){g=b;b=e.touches[0].screenY-h;a=Math.min(98,Math.max(0,a+b-g));content.style.transform=`translateY(${a}px)`;content.style.opacity=Math.max(.1,1-a/98);document.body.style.overflow=b>g?"hidden":"visible"}},{passive:!0});f.addEventListener("touchend",e=>{if(!c){if(a>88.2)try{window.via.cmd(514)}catch{}content.style.transform="translateY(0)";fadeIn(content);document.body.style.overflow="visible"}},{passive:!0})}
+const OpenSuggestion=function(){let f,d,e,l,h;return{bind(b,a,c){if(b=document.getElementById(b)){l=c;h=a.formActiveClassName||"search_bar_active";let g=b.closest("form");g&&(f=g,d||(d=document.createElement("div"),d.className="opSug_wpr",d.style.display="none",a=document.createElement("table"),e=document.createElement("tbody"),e.id="sug_tbody",a.appendChild(e),d.appendChild(a),f.parentNode.insertBefore(d,f.nextSibling)),b.addEventListener("input",m),b.addEventListener("focus",m),document.addEventListener("click",a=>{b.contains(a.target)||k()},!1));function m(){try{window.via.postMessage(__VIA_SECRET__,JSON.stringify({action:106,text:b.value}))}catch{}}}},pushSuggestions(b){if(b&&b.length){d.style.display="block";f.classList.add(h);e.innerHTML="";b.forEach(a=>{let c=document.createElement("tr"),g=document.createElement("td");g.textContent=a;c.className="sug-item";c.onclick=()=>{l(a)};c.appendChild(g);e.appendChild(c)})}else k();function k(){d.style.display="none";f.classList.remove(h)}}}}();
+function show(str){document.getElementById("search_input").value=str;search()}
+const params={formActiveClassName:"search_bar_active"};OpenSuggestion.bind("search_input",params,show);
+window.addEventListener("load",()=>document.getElementById("search_input").focus());
+</script>
+</body>
+</html>
