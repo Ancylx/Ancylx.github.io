@@ -1,108 +1,971 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="color-scheme" content="light dark">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui">
-<title>主页</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Ans Nebula</title>
 <style>
-:root{
-  --bg:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);
-  --fg:#1e293b;
-  --accent:#6366f1;
-  --glass:rgba(255,255,255,.65);
-  --shadow:0 8px 32px rgba(0,0,0,.1);
-  --radius:24px;
-  --trans:.3s cubic-bezier(.4,0,.2,1);
+/* ======== 核心设计变量（保持不变） ======== */
+:root {
+  --bg-deep: #0f172a;
+  --bg-mid: #1e293b;
+  --bg-light: #334155;
+  --accent-primary: #b6da3e;
+  --accent-glow: #c7f54e;
+  --accent-dim: #8ba72e;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-dim: #94a3b8;
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(182, 218, 62, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --line-color: rgba(182, 218, 62, 0.6);
+  --line-glow: 0 0 8px rgba(182, 218, 62, 0.5);
+  --trans-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --trans-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
-    --fg:#e2e8f0;
-    --glass:rgba(30,41,59,.7);
+
+/* ======== 基础重置 ======== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow-x: hidden; }
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-mid) 50%, var(--bg-light) 100%);
+  color: var(--text-primary);
+  position: relative;
+  cursor: crosshair;
+}
+
+/* ======== 星空背景与装饰线条 ======== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, var(--accent-primary), transparent),
+    radial-gradient(2px 2px at 60% 70%, var(--accent-dim), transparent),
+    radial-gradient(1px 1px at 50% 50%, var(--accent-glow), transparent),
+    radial-gradient(1px 1px at 80% 10%, var(--accent-primary), transparent);
+  background-size: 300px 300px;
+  animation: stars 120s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+@keyframes stars {
+  from { transform: translateY(0); }
+  to { transform: translateY(-300px); }
+}
+.decor-lines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.line-tl, .line-br {
+  position: absolute;
+  width: 160px;
+  height: 320px;
+  opacity: 0.3;
+}
+.line-tl {
+  top: 0; left: 0;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, transparent 70%);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+.line-br {
+  bottom: 0; right: 0;
+  background: linear-gradient(315deg, var(--accent-primary) 0%, transparent 70%);
+  clip-path: polygon(100% 100%, 100% 0, 0 100%);
+}
+
+/* ======== 主容器 ======== */
+.main-container {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* ======== 头像导航区域（已修改为支持换行） ======== */
+.profile-nav {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 居中对齐 */
+  flex-wrap: wrap; /* 允许换行 */
+  gap: 24px;
+  margin: -40px auto 60px;
+  padding: 0 20px;
+  animation: fadeIn 0.8s ease-out 0.4s both;
+}
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: var(--trans-fast);
+  padding: 8px 16px;
+  border-radius: 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  /* 每行最多4个，考虑gap后计算宽度 */
+  flex: 0 1 calc(25% - 18px);
+  min-width: 220px; /* 防止过度压缩 */
+  max-width: 280px; /* 限制最大宽度 */
+}
+.profile-link:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--line-glow);
+  color: var(--accent-glow);
+}
+.profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  border: 2px solid var(--accent-primary);
+  transition: var(--trans-fast);
+}
+.profile-link:hover .profile-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(182, 218, 62, 0.4);
+}
+.profile-text {
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 文字过长时显示省略号 */
+}
+
+/* ======== 标题区域 ======== */
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+  animation: fadeIn 0.8s ease-out;
+}
+.main-title {
+  font-size: 3.5rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--accent-primary);
+  text-shadow: var(--line-glow);
+  margin-bottom: 12px;
+}
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+}
+
+/* ======== 搜索框 ======== */
+.search-section {
+  width: 100%;
+  max-width: 640px;
+  margin-bottom: 80px;
+  animation: slideUp 0.6s ease-out 0.2s both;
+}
+.search-wrapper {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 4px;
+  box-shadow: var(--glass-shadow);
+  transition: var(--trans-fast);
+}
+.search-wrapper:focus-within {
+  box-shadow: 0 0 24px rgba(182, 218, 62, 0.3);
+  transform: translateY(-2px);
+}
+.search-box {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  gap: 12px;
+}
+
+/* 搜索引擎切换按钮 */
+.engine-switch {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--trans-fast);
+  flex-shrink: 0;
+}
+.engine-switch:hover {
+  border-color: var(--accent-primary);
+  transform: scale(1.1);
+  box-shadow: var(--line-glow);
+}
+.engine-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0.9);
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--text-primary);
+  padding: 8px;
+}
+.search-input::placeholder {
+  color: var(--text-dim);
+}
+.search-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--trans-fast);
+  flex-shrink: 0;
+}
+.search-btn:hover {
+  background: var(--accent-glow);
+  box-shadow: var(--line-glow);
+  transform: scale(1.05);
+}
+.search-icon {
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  border-radius: 50%;
+  position: relative;
+}
+.search-icon::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 2px;
+  background: white;
+  right: -6px;
+  bottom: -2px;
+  transform: rotate(45deg);
+}
+
+/* ======== 分类卡片 ======== */
+.category-grid {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 60px;
+}
+.category-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px;
+  transition: var(--trans-smooth);
+  position: relative;
+  overflow: hidden;
+}
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--trans-smooth);
+  pointer-events: none;
+}
+.category-card:hover::before {
+  opacity: 0.03;
+}
+.category-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(182, 218, 62, 0.15);
+  border-color: var(--accent-primary);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--accent-primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--accent-primary);
+}
+
+/* 折叠按钮 */
+.toggle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--trans-fast);
+  flex-shrink: 0;
+}
+.toggle-btn:hover {
+  border-color: var(--accent-primary);
+  transform: rotate(90deg);
+}
+.toggle-icon {
+  width: 16px;
+  height: 16px;
+  fill: var(--accent-primary);
+  transition: transform var(--trans-fast);
+}
+.toggle-btn.collapsed .toggle-icon {
+  transform: rotate(-90deg);
+}
+
+/* 内容区域 */
+.content-wrapper {
+  overflow: hidden;
+  transition: max-height var(--trans-smooth), opacity var(--trans-smooth);
+}
+.content-wrapper.collapsed {
+  max-height: 180px;
+  opacity: 0.8;
+}
+
+.video-list {
+  list-style: none;
+}
+.video-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.video-item:last-child {
+  border-bottom: none;
+}
+.video-link {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: var(--trans-fast);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.video-link:hover {
+  background: rgba(182, 218, 62, 0.1);
+  color: var(--accent-glow);
+  transform: translateX(4px);
+}
+.video-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(182, 218, 62, 0.2);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin-right: 8px;
+  color: var(--accent-primary);
+  white-space: nowrap;
+}
+
+/* ======== 资源导航 ======== */
+.resource-section {
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 60px;
+}
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 32px;
+  color: var(--accent-primary);
+  letter-spacing: 0.1em;
+}
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.resource-item {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 16px 12px;
+  display: flex;
+  align-items: center;
+  transition: var(--trans-fast);
+  text-decoration: none;
+  color: var(--text-secondary);
+  gap: 10px;
+  min-height: 56px;
+}
+.resource-item:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+.resource-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.resource-name {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ======== 动画 ======== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ======== 响应式 ======== */
+@media (max-width: 1200px) {
+  .profile-link {
+    flex: 0 1 calc(33.33% - 16px); /* 中等屏幕每行3个 */
   }
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'PingFang SC',sans-serif}
-body{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);transition:background var(--trans)}
-a{color:inherit;text-decoration:none}
-
-.search_part{display:flex;flex-direction:column;align-items:center;width:90%;max-width:520px;animation:fadeIn .8s ease-out}
-@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-
-.logo{margin-bottom:28px;transition:transform var(--trans)}
-.logo img{width:96px;height:96px;object-fit:cover;object-position:center;border-radius:50%;display:block}
-.logo:active{transform:scale(.92)}
-
-.search_bar{
-  display:flex;
-  align-items:stretch;
-  width:100%;
-  background:var(--glass);
-  backdrop-filter:blur(20px);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  overflow:hidden;
+@media (max-width: 768px) {
+  .main-title { font-size: 2.2rem; }
+  .category-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .resource-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .profile-nav {
+    gap: 16px;
+    padding: 0 10px;
+    margin: -20px auto 40px;
+  }
+  .profile-link {
+    flex: 0 1 calc(50% - 8px); /* 小屏幕每行2个 */
+    min-width: auto;
+    max-width: none;
+  }
+  .profile-text {
+    font-size: 0.9rem;
+  }
 }
-.search_bar input{
-  order:1;
-  flex:1 1 auto;
-  border:0;
-  padding:16px 20px;
-  font-size:16px;
-  background:transparent;
-  color:var(--fg);
-  outline:0;
+@media (max-width: 480px) {
+  .profile-link {
+    flex: 0 1 100%; /* 超小屏幕每行1个 */
+  }
 }
-.search_bar button{
-  order:2;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:0 16px;
-  border:0;
-  background:transparent;
-  cursor:pointer;
-  transition:background var(--trans);
-  height:100%;
+
+/* ======== 滚动条 ======== */
+::-webkit-scrollbar {
+  width: 8px;
 }
-.search_bar button:hover{background:rgba(99,102,241,.08)}
-.search_bar .icon{width:20px;height:20px;border:2px solid var(--accent);border-radius:50%;position:relative}
-.search_bar .icon::after{content:'';position:absolute;width:8px;height:2px;background:var(--accent);right:-6px;bottom:-2px;border-radius:2px;transform:rotate(45deg)}
-
-.opSug_wpr{background:var(--glass);backdrop-filter:blur(20px);border-radius:var(--radius);box-shadow:var(--shadow);margin-top:8px;max-height:200px;overflow:auto;display:none}
-.opSug_wpr table{width:100%;border-collapse:collapse}
-.sug-item{padding:14px 20px;font-size:15px;cursor:pointer;transition:background var(--trans)}
-.sug-item:hover{background:rgba(99,102,241,.08)}
-.sug-item:active{background:rgba(99,102,241,.15)}
-
-#gesture-indicator{position:fixed;top:0;left:0;right:0;height:60px;z-index:1}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-glow);
+}
 </style>
 </head>
 <body>
-<div class="search_part">
-  <a class="logo" href="https://github.com/Ancylx" target="_blank" title="书签">
-    <img src="https://avatars.githubusercontent.com/u/183050286" alt="logo">
-  </a>
-  <form class="search_bar" onsubmit="return search()" title="搜索">
-    <input id="search_input" type="text" autocomplete="off" placeholder="搜索或输入网址">
-    <button id="search_submit" aria-label="搜索"><div class="search icon"></div></button>
-  </form>
-  <div id="sug_wpr" class="opSug_wpr"><table><tbody id="sug_tbody"></tbody></table></div>
+
+<div class="decor-lines">
+  <div class="line-tl"></div>
+  <div class="line-br"></div>
 </div>
 
-<div id="gesture-indicator"></div>
+<div class="main-container">
+  <!-- 标题 -->
+  <header class="header">
+    <h1 class="main-title">知识星图</h1>
+    <p class="subtitle">学习笔记 · 技术导航 · 资源聚合</p>
+  </header>
+
+  <!-- 搜索引擎切换搜索框 -->
+  <section class="search-section">
+    <div class="search-wrapper">
+      <div class="search-box">
+        <button class="engine-switch" id="engineSwitch" title="切换搜索引擎" onclick="switchEngine()">
+          <img class="engine-icon" id="engineIcon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23b6da3e' d='M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z'/%3E%3C/svg%3E" alt="Current Engine">
+        </button>
+        <input id="search_input" class="search-input" type="text" placeholder="搜索" autocomplete="off">
+        <button class="search-btn" onclick="performSearch()" title="搜索">
+          <div class="search-icon"></div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 头像导航区域 -->
+  <nav class="profile-nav">
+    <a href="https://github.com/Ancylx" class="profile-link" target="_blank" rel="noopener" title="我的Github主页">
+      <img class="profile-avatar" src="https://avatars.githubusercontent.com/u/183050286" alt="GitHub头像">
+      <span class="profile-text">我的 Github 主页</span>
+    </a>
+    <a href="https://space.bilibili.com/353809194" class="profile-link" target="_blank" rel="noopener" title="我的Bilibili主页">
+      <img class="profile-avatar" src="https://i2.hdslb.com/bfs/face/5948a5de1b722d0216fd700256cb7ec764f284e4.jpg" alt="B站头像">
+      <span class="profile-text">我的 Bilibili 主页</span>
+    </a>
+  </nav>
+
+  <!-- 程序开发类 -->
+  <section class="category-grid">
+    <!-- Python 宇宙 -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🐍</div>
+          <h2 class="card-title">Python 宇宙</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="200">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Git</span>
+              给傻子的Git教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1sW81zbEkD" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">进阶</span>
+              Python类型注解为什么流行？
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1WoGgeZEmc" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">环境</span>
+              VScode + Anaconda配置
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Jgf6YvE8e" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">入门</span>
+              3小时快速入门Python
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1qW4y1a7fU" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">系统</span>
+              8天Python从入门到精通
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1EHdUYEEEj" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">爬虫</span>
+              50分钟快速入门Python爬虫
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.youtube.com/watch?v=I72uD8ED73U" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">习惯</span>
+              5个良好的Python习惯
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.youtube.com/watch?v=EoNOWVYKyo0" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">技巧</span>
+              Python 5个有用的F-String技巧
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Web 前端 -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🌐</div>
+          <h2 class="card-title">Web 前端</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="180">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1vs411M7aT" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">HTML</span>
+              HTML 速成教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1bW411R7hg" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">CSS</span>
+              CSS 速成教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Jt411D7j6" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">JS</span>
+              JavaScript 速成教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1bK4y1i7BY" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">工具</span>
+              VSCode做精美笔记
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1AT411h7RX" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">网站</span>
+              个人网站搭建完整指南
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1ac411B7Li" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">博客</span>
+              个人博客搭建教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.youtube.com/watch?v=_PPWWRV6gbA" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">文档</span>
+              The Only Markdown Crash Course
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- C/C++ -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">⚙️</div>
+          <h2 class="card-title">C/C++</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="160">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Cu411y7vT" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">配置</span>
+              VScode配置C/C++运行环境
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1tcgLzPEUA" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">问题</span>
+              中文乱码？多文件编译？解决方案
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 其他语言 -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">📚</div>
+          <h2 class="card-title">其他语言</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="140">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV17F411T7Ao" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Java</span>
+              Java零基础视频教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1dBEDzPELs" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">路线</span>
+              Java学习路线(给大一大二大三)
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Yq66Y3EFq" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">LaTeX</span>
+              LaTeX环境部署与入门
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3D & 建模 -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🎨</div>
+          <h2 class="card-title">3D & 建模</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="180">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1fk4y127qg" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Blockbench</span>
+              Blockbench 完整教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1ekbtzbE1R" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">YSM</span>
+              BB+YSM建模全流程教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV12yKWeQELN" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Blender</span>
+              恋活模型转VRM/MMD教程
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- AIGC & AI工具 -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🤖</div>
+          <h2 class="card-title">AIGC & AI工具</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="160">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1YdYszoEcj" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">SD</span>
+              Stable Diffusion WebUI零基础入门
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1yorUYWEGD" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Cursor</span>
+              Cursor使用技巧和思路
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Jr5EzMEWA" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">GalGame</span>
+              支持LaTeX的GalGame框架
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 精选资源库 -->
+  <section class="resource-section">
+    <h2 class="section-title">精选资源库</h2>
+    <div class="resource-grid">
+      <a href="https://www.runoob.com" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://www.runoob.com/wp-content/themes/runoob/assets/img/runoob-logo.png" alt="菜鸟教程">
+        <span class="resource-name">菜鸟教程</span>
+      </a>
+      <a href="https://bangumi.tv" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://bangumi.tv/img/rc3/logo.png" alt="Bangumi">
+        <span class="resource-name">Bangumi</span>
+      </a>
+      <a href="https://www.ghxi.com" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://www.ghxi.com/wp-content/uploads/2019/12/2020logo.png" alt="果壳剥壳">
+        <span class="resource-name">果壳剥壳</span>
+      </a>
+      <a href="https://huggingface.co" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="Hugging Face">
+        <span class="resource-name">Hugging Face</span>
+      </a>
+      <a href="https://civitai.com" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://www.baidu-venture.com/_nuxt/img/CivitAI.cb30f49.png" alt="Civitai">
+        <span class="resource-name">Civitai</span>
+      </a>
+      <a href="https://www.modelscope.cn" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://modelscope.oss-cn-beijing.aliyuncs.com/modelscope.gif" alt="Modelscope">
+        <span class="resource-name">Modelscope</span>
+      </a>
+      <a href="https://www.liblib.art" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://n.sinaimg.cn/spider20250225/606/w900h506/20250225/4c08-1c038f12cdd3497cad7288fc8c6f3e04.png" alt="Liblib">
+        <span class="resource-name">Liblib AI</span>
+      </a>
+      <a href="https://www.zerochan.net" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://static.zerochan.net/logo12.png" alt="Zerochan">
+        <span class="resource-name">Zerochan</span>
+      </a>
+      <a href="https://www.lrccon.com" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://www.lrccon.com/img/logo.svg" alt="歌词转换">
+        <span class="resource-name">歌词字幕转换</span>
+      </a>
+      <a href="https://www.overleaf.com" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="data:image/svg+xml,%3Csvg fill='%23b6da3e' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E" alt="Overleaf">
+        <span class="resource-name">Overleaf</span>
+      </a>
+      <a href="https://www.zlib.by" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://zlib.by/img/logo.zlibrary.svg" alt="Z-Library">
+        <span class="resource-name">Z-Library</span>
+      </a>
+      <a href="https://www.aplaybox.com" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://www.aplaybox.com/img/pb_logo_new_top.f143e443.png" alt="模之屋">
+        <span class="resource-name">模之屋</span>
+      </a>
+    </div>
+  </section>
+</div>
 
 <script>
-function showButton(){document.getElementById("search_submit").style.display="flex"}
-function hideButton(){if(!document.getElementById("search_input").value)document.getElementById("search_submit").style.display="none"}
-function search(){const a=document.getElementById("search_input");if(a.value){try{location.href='via://search?q='+encodeURIComponent(a.value)}catch{}a.value="";hideButton();document.activeElement.blur()}return!1}
-function fadeIn(a){let b=Math.max(.05,parseFloat(a.style.opacity||0)),d=setInterval(()=>{b>=1&&clearInterval(d);a.style.opacity=Math.min(1,b);b+=.1*b},6)}
-function isGestureDisabled(){return document.activeElement&&document.activeElement.id==="search_input"||window.via&&!window.via.cmd(515)?!0:0!=(document.documentElement.scrollTop||document.body.scrollTop)}
-function initGesture(f){let c=!1,h=0,b=0,g=0,a=0;f.addEventListener("touchstart",e=>{c=isGestureDisabled();if(!c){h=e.touches[0].screenY;a=b=0;document.body.style.overflow="visible"}},{passive:!0});f.addEventListener("touchmove",e=>{if(!c){g=b;b=e.touches[0].screenY-h;a=Math.min(98,Math.max(0,a+b-g));content.style.transform=`translateY(${a}px)`;content.style.opacity=Math.max(.1,1-a/98);document.body.style.overflow=b>g?"hidden":"visible"}},{passive:!0});f.addEventListener("touchend",e=>{if(!c){if(a>88.2)try{window.via.cmd(514)}catch{}content.style.transform="translateY(0)";fadeIn(content);document.body.style.overflow="visible"}},{passive:!0})}
-const OpenSuggestion=function(){let f,d,e,l,h;return{bind(b,a,c){if(b=document.getElementById(b)){l=c;h=a.formActiveClassName||"search_bar_active";let g=b.closest("form");g&&(f=g,d||(d=document.createElement("div"),d.className="opSug_wpr",d.style.display="none",a=document.createElement("table"),e=document.createElement("tbody"),e.id="sug_tbody",a.appendChild(e),d.appendChild(a),f.parentNode.insertBefore(d,f.nextSibling)),b.addEventListener("input",m),b.addEventListener("focus",m),document.addEventListener("click",a=>{b.contains(a.target)||k()},!1));function m(){try{window.via.postMessage(__VIA_SECRET__,JSON.stringify({action:106,text:b.value}))}catch{}}}},pushSuggestions(b){if(b&&b.length){d.style.display="block";f.classList.add(h);e.innerHTML="";b.forEach(a=>{let c=document.createElement("tr"),g=document.createElement("td");g.textContent=a;c.className="sug-item";c.onclick=()=>{l(a)};c.appendChild(g);e.appendChild(c)})}else k();function k(){d.style.display="none";f.classList.remove(h)}}}}();
-function show(str){document.getElementById("search_input").value=str;search()}
-const params={formActiveClassName:"search_bar_active"};OpenSuggestion.bind("search_input",params,show);
-window.addEventListener("load",()=>document.getElementById("search_input").focus());
+// ======== 搜索引擎配置 ========
+const engines = [
+  { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/%3E%3C/svg%3E' },
+  { name: 'Google', url: 'https://www.google.com/search?q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/%3E%3Cpath fill="%23b6da3e" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/%3E%3Cpath fill="%23b6da3e" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/%3E%3Cpath fill="%23b6da3e" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/%3E%3C/svg%3E' },
+  { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/%3E%3C/svg%3E' },
+  { name: 'BiliBili', url: 'https://search.bilibili.com/all?keyword=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.996 1.528 2.255 1.574 3.773v7.647c-.054 1.51-.578 2.769-1.574 3.773-1.004.996-2.255 1.528-3.773 1.574h-4.5c-.48 0-.944-.188-1.3-.525-.356-.337-.556-.794-.556-1.27v-1.5H8.063c-.48 0-.944-.188-1.3-.525-.356-.337-.556-.794-.556-1.27v-1.5H4.5c-.663 0-1.5-.413-1.5-1.5v-1.5c0-.663.413-1.5 1.5-1.5h1.5V9.563c0-.476.188-.944.525-1.3.337-.356.794-.556 1.27-.556h8.25V4.653zm-4.5 10.125c-.663 0-1.5.413-1.5 1.5s.413 1.5 1.5 1.5 1.5-.413 1.5-1.5-.413-1.5-1.5-1.5zm4.5 0c-.663 0-1.5.413-1.5 1.5s.413 1.5 1.5 1.5 1.5-.413 1.5-1.5-.413-1.5-1.5-1.5z"/%3E%3C/svg%3E' },
+  { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M5.721 0C2.251 0 0 2.25 0 5.719V18.28C0 21.751 2.252 24 5.721 24h12.56C21.751 24 24 21.75 24 18.281V5.72C24 2.249 21.75 0 18.281 0zm1.964 4.078c-.271.73-.5 1.434-.68 2.11h5.587c.547-.01.955.048 1.225.168.27.12.455.291.556.513.1.222.127.469.08.65-.046.181-.147.326-.304.435-.157.11-.64.336-1.45.68-.81.342-1.364.669-1.66.98-.296.31-.457.708-.483 1.188-.025.48-.025.95 0 1.41.026.46.026.88 0 1.26-.026.38-.026.76 0 1.14.026.38.026.78 0 1.2-.026.42-.026.88 0 1.38l.05.553c.05.552.073 1.022.07 1.41-.003.387-.02.877-.05 1.47-.03.592-.047 1.212-.05 1.86-.003.647.014 1.277.05 1.89.036.61.05 1.18.04 1.703-.008.523-.008.92 0 1.19.01.27.01.48 0 .64-.01.16-.01.3 0 .42.01.12.01.28 0 .48l-.16 1.28c-.11.88-.23 1.767-.35 2.663-.12.896-.23 1.81-.34 2.74-.11.93-.2 1.877-.27 2.842-.07.965-.12 1.95-.17 2.955H7.2c.048-.965.102-1.91.162-2.835.06-.925.136-1.85.227-2.775.09-.925.196-1.86.318-2.805.12-.945.257-1.93.408-2.955.15-1.025.317-2.14.5-3.345.183-1.204.383-2.56.6-4.07h-3.44c.21-.6.46-1.19.75-1.77.29-.58.62-1.16.99-1.74.37-.58.77-1.18 1.2-1.8.43-.62.88-1.29 1.35-2.01.48-.72.97-1.51 1.47-2.37.5-.86 1.01-1.83 1.53-2.91.52-1.08 1.04-2.29 1.56-3.63.52-1.34 1.02-2.83 1.5-4.47z"/%3E%3Cpath fill="%23b6da3e" d="M18.901 20.052h-1.73v-1.84c-.05-.6-.05-1.2 0-1.8v-1.84h1.73v5.48zm0-7.02h-1.73V7.862c-.05-.6-.05-1.2 0-1.8V4.222h1.73v8.83z"/%3E%3C/svg%3E' },
+  { name: '博客园', url: 'https://zzkx.cnblogs.com/s?w=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M4 4h16v12H4z"/%3E%3Cpath fill="%23b6da3e" d="M2 3v4h2V5h16v14H4v-2H2v4h20V3z"/%3E%3C/svg%3E' },
+  { name: 'GitHub', url: 'https://github.com/search?q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M12 .5A12 12 0 0 0 0 12.82c0 5.34 3.44 9.86 8.21 11.47.6.12.82-.27.82-.6V20.7c-3.34.74-4.04-1.63-4.04-1.63-.55-1.41-1.36-1.78-1.36-1.78-1.11-.77.08-.76.08-.76 1.23.09 1.88 1.28 1.88 1.28 1.09 1.9 2.86 1.35 3.56 1.03.11-.8.42-1.35.76-1.66-2.67-.31-5.48-1.36-5.48-6.06 0-1.34.47-2.44 1.24-3.3-.12-.31-.54-1.56.12-3.25 0 0 1.01-.32 3.3 1.26a11.2 11.2 0 0 1 6 0c2.29-1.58 3.3-1.26 3.3-1.26.66 1.69.24 2.94.12 3.25.77.86 1.24 1.96 1.24 3.3 0 4.72-2.81 5.74-5.49 6.05.43.37.81 1.1.81 2.22v3.29c0 .34.22.73.82.6A12.2 12.2 0 0 0 24 12.82 12 12 0 0 0 12 .5z"/%3E%3C/svg%3E' },
+  { name: 'CSDN', url: 'https://so.csdn.net/so/search?spm=Null&urw=&q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M3 3h18v8H3z"/%3E%3Cpath fill="%23b6da3e" d="M3 13h18v8H3z"/%3E%3Cpath fill="%23b6da3e" d="M8 6h2v2H8zM8 16h2v2H8z"/%3E%3C/svg%3E' }
+];
+
+let currentEngineIndex = 0;
+const engineIcon = document.getElementById('engineIcon');
+
+function switchEngine() {
+  currentEngineIndex = (currentEngineIndex + 1) % engines.length;
+  engineIcon.src = engines[currentEngineIndex].icon;
+  engineIcon.alt = engines[currentEngineIndex].name;
+  document.getElementById('engineSwitch').title = `当前: ${engines[currentEngineIndex].name} (点击切换)`;
+}
+
+function performSearch() {
+  const input = document.getElementById('search_input');
+  const query = input.value.trim();
+  if (query) {
+    const engine = engines[currentEngineIndex];
+    window.open(`${engine.url}${encodeURIComponent(query)}`, '_blank');
+    input.value = '';
+  }
+}
+
+// ======== 分类折叠功能 ========
+function toggleCategory(btn) {
+  const content = btn.closest('.category-card').querySelector('.content-wrapper');
+  const isCollapsed = content.classList.contains('collapsed');
+  
+  if (isCollapsed) {
+    content.classList.remove('collapsed');
+    btn.classList.remove('collapsed');
+  } else {
+    content.classList.add('collapsed');
+    btn.classList.add('collapsed');
+  }
+}
+
+// ======== 搜索栏键盘事件 ========
+document.getElementById('search_input').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    performSearch();
+  }
+});
+
+// ======== 滚动动画 ========
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.category-card').forEach(card => {
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(40px)';
+  card.style.transition = 'opacity 0.6s var(--trans-smooth), transform 0.6s var(--trans-smooth)';
+  observer.observe(card);
+});
+
+// ======== 初始化 ========
+document.getElementById('engineSwitch').title = `当前: ${engines[0].name} (点击切换)`;
 </script>
+
 </body>
 </html>
