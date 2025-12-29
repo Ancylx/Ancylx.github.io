@@ -549,10 +549,6 @@ body::before {
 
   <!-- 头像导航区域 -->
   <nav class="profile-nav">
-    <a href="https://space.bilibili.com/353809194" class="profile-link" target="_blank" rel="noopener" title="我的Bilibili主页">
-      <img class="profile-avatar" src="https://i0.hdslb.com/bfs/face/5948a5de1b722d0216fd700256cb7ec764f284e4.jpg" alt="B站头像">
-      <span class="profile-text">Bilibili</span>
-    </a>
     <a href="https://github.com/Ancylx" class="profile-link" target="_blank" rel="noopener" title="我的Github主页">
       <img class="profile-avatar" src="https://avatars.githubusercontent.com/u/183050286" alt="GitHub头像">
       <span class="profile-text">Github</span>
@@ -560,6 +556,10 @@ body::before {
     <a href="https://blog.csdn.net/2401_89870358" class="profile-link" target="_blank" rel="noopener" title="我的CSDN主页">
       <img class="profile-avatar" src="https://profile-avatar.csdnimg.cn/default.jpg" alt="CSDN头像">
       <span class="profile-text">CSDN</span>
+    </a>
+    <a href="https://space.bilibili.com/353809194" class="profile-link" target="_blank" rel="noopener" title="我的Bilibili主页">
+      <img class="profile-avatar" src="https://i0.hdslb.com/bfs/face/5948a5de1b722d0216fd700256cb7ec764f284e4.jpg" alt="B站头像">
+      <span class="profile-text">Bilibili</span>
     </a>
     <a href="https://www.zhihu.com/people/yycy-86" class="profile-link" target="_blank" rel="noopener" title="我的知乎主页">
       <img class="profile-avatar" src="https://picx.zhimg.com/v2-340647a88b860f3fca781f062edc0617.jpg" alt="知乎头像">
@@ -636,6 +636,99 @@ body::before {
       </div>
     </div>
 
+    <!-- Lua -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🔧</div>
+          <h2 class="card-title">Lua </h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="140">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV17F411T7Ao" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Java</span>
+              Java零基础视频教程
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Java -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">☕</div>
+          <h2 class="card-title">Java</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="140">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV17F411T7Ao" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Java</span>
+              Java零基础视频教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1dBEDzPELs" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">路线</span>
+              Java学习路线(给大一大二大三)
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Yq66Y3EFq" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">LaTeX</span>
+              LaTeX环境部署与入门
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- C/C++ -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">⚙️</div>
+          <h2 class="card-title">C/C++</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="160">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Cu411y7vT" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">配置</span>
+              VScode配置C/C++运行环境
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1tcgLzPEUA" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">问题</span>
+              中文乱码？多文件编译？解决方案
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <!-- Web 前端 -->
     <div class="category-card">
       <div class="card-header">
@@ -697,80 +790,12 @@ body::before {
       </div>
     </div>
 
-    <!-- C/C++ -->
+    <!-- 3D 建模 -->
     <div class="category-card">
       <div class="card-header">
         <div class="card-title-group">
-          <div class="card-icon">⚙️</div>
-          <h2 class="card-title">C/C++</h2>
-        </div>
-        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
-          <svg class="toggle-icon" viewBox="0 0 24 24">
-            <path d="M7 10l5 5 5-5z"/>
-          </svg>
-        </button>
-      </div>
-      <div class="content-wrapper" data-max-height="160">
-        <ul class="video-list">
-          <li class="video-item">
-            <a href="https://www.bilibili.com/video/BV1Cu411y7vT" class="video-link" target="_blank" rel="noopener">
-              <span class="video-badge">配置</span>
-              VScode配置C/C++运行环境
-            </a>
-          </li>
-          <li class="video-item">
-            <a href="https://www.bilibili.com/video/BV1tcgLzPEUA" class="video-link" target="_blank" rel="noopener">
-              <span class="video-badge">问题</span>
-              中文乱码？多文件编译？解决方案
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- 其他语言 -->
-    <div class="category-card">
-      <div class="card-header">
-        <div class="card-title-group">
-          <div class="card-icon">📚</div>
-          <h2 class="card-title">其他语言</h2>
-        </div>
-        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
-          <svg class="toggle-icon" viewBox="0 0 24 24">
-            <path d="M7 10l5 5 5-5z"/>
-          </svg>
-        </button>
-      </div>
-      <div class="content-wrapper" data-max-height="140">
-        <ul class="video-list">
-          <li class="video-item">
-            <a href="https://www.bilibili.com/video/BV17F411T7Ao" class="video-link" target="_blank" rel="noopener">
-              <span class="video-badge">Java</span>
-              Java零基础视频教程
-            </a>
-          </li>
-          <li class="video-item">
-            <a href="https://www.bilibili.com/video/BV1dBEDzPELs" class="video-link" target="_blank" rel="noopener">
-              <span class="video-badge">路线</span>
-              Java学习路线(给大一大二大三)
-            </a>
-          </li>
-          <li class="video-item">
-            <a href="https://www.bilibili.com/video/BV1Yq66Y3EFq" class="video-link" target="_blank" rel="noopener">
-              <span class="video-badge">LaTeX</span>
-              LaTeX环境部署与入门
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- 3D & 建模 -->
-    <div class="category-card">
-      <div class="card-header">
-        <div class="card-title-group">
-          <div class="card-icon">🎨</div>
-          <h2 class="card-title">3D & 建模</h2>
+          <div class="card-icon">🧊</div>
+          <h2 class="card-title">3D 建模</h2>
         </div>
         <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
           <svg class="toggle-icon" viewBox="0 0 24 24">
@@ -790,6 +815,56 @@ body::before {
             <a href="https://www.bilibili.com/video/BV1ekbtzbE1R" class="video-link" target="_blank" rel="noopener">
               <span class="video-badge">YSM</span>
               BB+YSM建模全流程教程
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 平面设计 -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🖼️</div>
+          <h2 class="card-title">平面设计</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="180">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1fk4y127qg" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Blockbench</span>
+              Blockbench 完整教程
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 视效剪辑 -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🎬</div>
+          <h2 class="card-title">视效剪辑</h2>
+        </div>
+        <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper" data-max-height="180">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1fk4y127qg" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Blockbench</span>
+              Blockbench 完整教程
             </a>
           </li>
         </ul>
@@ -826,13 +901,12 @@ body::before {
         </ul>
       </div>
     </div>
-  </section>
 
-  <!-- 游戏开发 -->
+    <!-- 游戏开发 -->
     <div class="category-card">
       <div class="card-header">
         <div class="card-title-group">
-          <div class="card-icon">🤖</div>
+          <div class="card-icon">🎮</div>
           <h2 class="card-title">游戏开发</h2>
         </div>
         <button class="toggle-btn" onclick="toggleCategory(this)" title="展开/收起">
