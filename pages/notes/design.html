@@ -1,1 +1,687 @@
-DESIGN
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>程序开发类</title>
+<style>
+/* ======== 核心设计变量（保持不变） ======== */
+:root {
+  --bg-deep: #0f172a;
+  --bg-mid: #1e293b;
+  --bg-light: #334155;
+  --accent-primary: #b6da3e;
+  --accent-glow: #c7f54e;
+  --accent-dim: #8ba72e;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-dim: #94a3b8;
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(182, 218, 62, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --line-color: rgba(182, 218, 62, 0.6);
+  --line-glow: 0 0 8px rgba(182, 218, 62, 0.5);
+  --trans-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --trans-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ======== 基础重置 ======== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow-x: hidden; }
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-mid) 50%, var(--bg-light) 100%);
+  color: var(--text-primary);
+  position: relative;
+  cursor: crosshair;
+}
+
+/* ======== 星空背景与装饰线条 ======== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, var(--accent-primary), transparent),
+    radial-gradient(2px 2px at 60% 70%, var(--accent-dim), transparent),
+    radial-gradient(1px 1px at 50% 50%, var(--accent-glow), transparent),
+    radial-gradient(1px 1px at 80% 10%, var(--accent-primary), transparent);
+  background-size: 300px 300px;
+  animation: stars 120s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+@keyframes stars {
+  from { transform: translateY(0); }
+  to { transform: translateY(-300px); }
+}
+.decor-lines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.line-tl, .line-br {
+  position: absolute;
+  width: 160px;
+  height: 320px;
+  opacity: 0.3;
+}
+.line-tl {
+  top: 0; left: 0;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, transparent 70%);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+.line-br {
+  bottom: 0; right: 0;
+  background: linear-gradient(315deg, var(--accent-primary) 0%, transparent 70%);
+  clip-path: polygon(100% 100%, 100% 0, 0 100%);
+}
+
+/* ======== 主容器 ======== */
+.main-container {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* ======== 标题区域 ======== */
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+  animation: fadeIn 0.8s ease-out;
+}
+.main-title {
+  font-size: 3.5rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--accent-primary);
+  text-shadow: var(--line-glow);
+  margin-bottom: 12px;
+}
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+}
+
+
+/* ======== 分类卡片 ======== */
+.category-grid {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 60px;
+}
+.category-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px;
+  transition: var(--trans-smooth);
+  position: relative;
+  overflow: hidden;
+}
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--trans-smooth);
+  pointer-events: none;
+}
+.category-card:hover::before {
+  opacity: 0.03;
+}
+.category-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(182, 218, 62, 0.15);
+  border-color: var(--accent-primary);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--accent-primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--accent-primary);
+}
+
+/* 折叠按钮 */
+.toggle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--trans-fast);
+  flex-shrink: 0;
+}
+.toggle-btn:hover {
+  border-color: var(--accent-primary);
+  transform: rotate(90deg);
+}
+.toggle-icon {
+  width: 16px;
+  height: 16px;
+  fill: var(--accent-primary);
+  transition: transform var(--trans-fast);
+}
+.toggle-btn.collapsed .toggle-icon {
+  transform: rotate(-90deg);
+}
+
+/* 内容区域 */
+.content-wrapper {
+  overflow: hidden;
+  transition: max-height var(--trans-smooth), opacity var(--trans-smooth);
+}
+.content-wrapper.collapsed {
+  max-height: 180px;
+  opacity: 0.8;
+}
+
+.video-list {
+  list-style: none;
+}
+.video-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.video-item:last-child {
+  border-bottom: none;
+}
+.video-link {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: var(--trans-fast);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.video-link:hover {
+  background: rgba(182, 218, 62, 0.1);
+  color: var(--accent-glow);
+  transform: translateX(4px);
+}
+.video-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(182, 218, 62, 0.2);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin-right: 8px;
+  color: var(--accent-primary);
+  white-space: nowrap;
+}
+
+/* ======== 资源导航 ======== */
+.resource-section {
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 60px;
+}
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 32px;
+  color: var(--accent-primary);
+  letter-spacing: 0.1em;
+}
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.resource-item {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 16px 12px;
+  display: flex;
+  align-items: center;
+  transition: var(--trans-fast);
+  text-decoration: none;
+  color: var(--text-secondary);
+  gap: 10px;
+  min-height: 56px;
+}
+.resource-item:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+.resource-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.resource-name {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ======== 动画 ======== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ======== 响应式 ======== */
+@media (max-width: 1200px) {
+  .profile-link {
+    flex: 0 1 calc(33.33% - 16px); /* 中等屏幕每行3个 */
+  }
+}
+@media (max-width: 768px) {
+  .main-title { font-size: 2.2rem; }
+  .category-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .resource-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .profile-nav {
+    gap: 16px;
+    padding: 0 10px;
+    margin: -20px auto 40px;
+  }
+  .profile-link {
+    flex: 0 1 calc(50% - 8px); /* 小屏幕每行2个 */
+    min-width: auto;
+    max-width: none;
+  }
+  .profile-text {
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 480px) {
+  .profile-link {
+    flex: 0 1 100%; /* 超小屏幕每行1个 */
+  }
+}
+
+/* ======== 滚动条 ======== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-glow);
+}
+</style>
+</head>
+<body>
+
+<div class="decor-lines">
+  <div class="line-tl"></div>
+  <div class="line-br"></div>
+</div>
+
+<div class="main-container">
+  <!-- 标题 -->
+  <header class="header">
+    <h1 class="main-title">程序开发类</h1>
+    <p class="subtitle">学习笔记 · 技术导航 · 资源聚合</p>
+  </header>
+
+  <!-- 程序开发类 -->
+  <section class="category-grid">
+    <!--  Python  -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🐍</div>
+          <h2 class="card-title"> Python </h2>
+        </div>
+        <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper collapsed" data-max-height="200">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Git</span>
+              给傻子的Git教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1sW81zbEkD" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">进阶</span>
+              Python类型注解为什么流行？
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1WoGgeZEmc" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">环境</span>
+              VScode + Anaconda配置
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Jgf6YvE8e" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">入门</span>
+              3小时快速入门Python
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1qW4y1a7fU" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">系统</span>
+              8天Python从入门到精通
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1EHdUYEEEj" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">爬虫</span>
+              50分钟快速入门Python爬虫
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.youtube.com/watch?v=I72uD8ED73U" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">习惯</span>
+              5个良好的Python习惯
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.youtube.com/watch?v=EoNOWVYKyo0" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">技巧</span>
+              Python 5个有用的F-String技巧
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Lua -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🔧</div>
+          <h2 class="card-title">Lua </h2>
+        </div>
+        <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper collapsed" data-max-height="140">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV17F411T7Ao" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Java</span>
+              Java零基础视频教程
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Java -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">☕</div>
+          <h2 class="card-title">Java</h2>
+        </div>
+        <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper collapsed" data-max-height="140">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV17F411T7Ao" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">Java</span>
+              Java零基础视频教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1dBEDzPELs" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">路线</span>
+              Java学习路线(给大一大二大三)
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Yq66Y3EFq" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">LaTeX</span>
+              LaTeX环境部署与入门
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- C/C++ -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">⚙️</div>
+          <h2 class="card-title">C/C++</h2>
+        </div>
+        <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper collapsed" data-max-height="160">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Cu411y7vT" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">配置</span>
+              VScode配置C/C++运行环境
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1tcgLzPEUA" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">问题</span>
+              中文乱码？多文件编译？解决方案
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Web 前端 -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🌐</div>
+          <h2 class="card-title">Web 前端</h2>
+        </div>
+        <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper collapsed" data-max-height="180">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1vs411M7aT" class="video-link" target="_blank" rel="noopener">
+              <span class="视频-badge">HTML</span>
+              HTML 速成教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1bW411R7hg" class="video-link" target="_blank" rel="noopener">
+              <span class="视频-badge">CSS</span>
+              CSS 速成教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Jt411D7j6" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">JS</span>
+              JavaScript 速成教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1bK4y1i7BY" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">工具</span>
+              VSCode做精美笔记
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1AT411h7RX" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">网站</span>
+              个人网站搭建完整指南
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1ac411B7Li" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">博客</span>
+              个人博客搭建教程
+            </a>
+          </li>
+          <li class="video-item">
+            <a href="https://www.youtube.com/watch?v=_PPWWRV6gbA" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">文档</span>
+              The Only Markdown Crash Course
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 游戏开发 -->
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🎮</div>
+          <h2 class="card-title">游戏开发</h2>
+        </div>
+        <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起">
+          <svg class="toggle-icon" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="content-wrapper collapsed" data-max-height="160">
+        <ul class="video-list">
+          <li class="video-item">
+            <a href="https://www.bilibili.com/video/BV1Jr5EzMEWA" class="video-link" target="_blank" rel="noopener">
+              <span class="video-badge">框架</span>
+              支持LaTeX的GalGame框架
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 程序 -->
+  <section class="resource-section">
+    <h2 class="section-title">程序</h2>
+    <div class="resource-grid">
+      <a href="https://www.runoob.com" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://www.runoob.com/wp-content/themes/runoob/assets/img/runoob-logo.png" alt="菜鸟教程">
+        <span class="resource-name">菜鸟编程</span>
+      </a>
+      <a href="https://www.ghxi.com" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://www.ghxi.com/wp-content/uploads/2019/12/2020logo.png" alt="果壳剥壳">
+        <span class="resource-name">果壳剥壳</span>
+      </a>
+      <a href="https://www.gy328.com/" class="resource-item" target="_blank" rel="noopener">
+        <img class="resource-icon" src="https://www.gy328.com/wp-content/uploads/2024/06/1717599115-gkbai.png" alt="极客应用">
+        <span class="resource-name">极客应用</span>
+      </a>
+    </div>
+  </section>
+
+
+<script>
+// ======== 分类折叠功能 ========
+function toggleCategory(btn) {
+  const content = btn.closest('.category-card').querySelector('.content-wrapper');
+  const isCollapsed = content.classList.contains('collapsed');
+  
+  if (isCollapsed) {
+    content.classList.remove('collapsed');
+    btn.classList.remove('collapsed');
+  } else {
+    content.classList.add('collapsed');
+    btn.classList.add('collapsed');
+  }
+}
+
+// ======== 滚动动画 ========
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.category-card').forEach(card => {
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(40px)';
+  card.style.transition = 'opacity 0.6s var(--trans-smooth), transform 0.6s var(--trans-smooth)';
+  observer.observe(card);
+});
+
+// ======== 初始化 ========
+document.getElementById('engineSwitch').title = `当前: ${engines[0].name} (点击切换)`;
+</script>
+
+</body>
+</html>
