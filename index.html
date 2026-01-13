@@ -4,99 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>星云日志</title>
+<link rel="stylesheet" href="/shared.css">
 <style>
-/* ======== 核心设计变量（保持不变） ======== */
-:root {
-  --bg-deep: #0f172a;
-  --bg-mid: #1e293b;
-  --bg-light: #334155;
-  --accent-primary: #b6da3e;
-  --accent-glow: #c7f54e;
-  --accent-dim: #8ba72e;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-dim: #94a3b8;
-  --glass-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(182, 218, 62, 0.2);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  --line-color: rgba(182, 218, 62, 0.6);
-  --line-glow: 0 0 8px rgba(182, 218, 62, 0.5);
-  --trans-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --trans-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ======== 基础重置 ======== */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow-x: hidden; }
-body {
-  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-mid) 50%, var(--bg-light) 100%);
-  color: var(--text-primary);
-  position: relative;
-  cursor: crosshair;
-}
-
-/* ======== 星空背景与装饰线条 ======== */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: 
-    radial-gradient(2px 2px at 20% 30%, var(--accent-primary), transparent),
-    radial-gradient(2px 2px at 60% 70%, var(--accent-dim), transparent),
-    radial-gradient(1px 1px at 50% 50%, var(--accent-glow), transparent),
-    radial-gradient(1px 1px at 80% 10%, var(--accent-primary), transparent);
-  background-size: 300px 300px;
-  animation: stars 120s linear infinite;
-  pointer-events: none;
-  z-index: -1;
-}
-@keyframes stars {
-  from { transform: translateY(0); }
-  to { transform: translateY(-300px); }
-}
-.decor-lines {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-.line-tl, .line-br {
-  position: absolute;
-  width: 160px;
-  height: 320px;
-  opacity: 0.3;
-}
-.line-tl {
-  top: 0; left: 0;
-  background: linear-gradient(135deg, var(--accent-primary) 0%, transparent 70%);
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-}
-.line-br {
-  bottom: 0; right: 0;
-  background: linear-gradient(315deg, var(--accent-primary) 0%, transparent 70%);
-  clip-path: polygon(100% 100%, 100% 0, 0 100%);
-}
-
-/* ======== 主容器 ======== */
-.main-container {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
-}
-
-/* ======== 头像导航区域（已修改为支持换行） ======== */
+/* ======== 头像导航区域（仅index.html使用） ======== */
 .profile-nav {
   width: 100%;
   max-width: 1200px;
   display: flex;
   align-items: center;
-  justify-content: center; /* 居中对齐 */
-  flex-wrap: wrap; /* 允许换行 */
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 24px;
   margin: -40px auto 60px;
   padding: 0 20px;
@@ -114,10 +31,9 @@ body::before {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(8px);
-  /* 每行最多4个，考虑gap后计算宽度 */
   flex: 0 1 calc(25% - 18px);
-  min-width: 220px; /* 防止过度压缩 */
-  max-width: 280px; /* 限制最大宽度 */
+  min-width: 220px;
+  max-width: 280px;
 }
 .profile-link:hover {
   border-color: var(--accent-primary);
@@ -143,30 +59,10 @@ body::before {
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* 文字过长时显示省略号 */
+  text-overflow: ellipsis;
 }
 
-/* ======== 标题区域 ======== */
-.header {
-  text-align: center;
-  margin-bottom: 60px;
-  animation: fadeIn 0.8s ease-out;
-}
-.main-title {
-  font-size: 3.5rem;
-  font-weight: 300;
-  letter-spacing: 0.2em;
-  color: var(--accent-primary);
-  text-shadow: var(--line-glow);
-  margin-bottom: 12px;
-}
-.subtitle {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  letter-spacing: 0.1em;
-}
-
-/* ======== 搜索框 ======== */
+/* ======== 搜索框（仅index.html使用） ======== */
 .search-section {
   width: 100%;
   max-width: 640px;
@@ -193,8 +89,6 @@ body::before {
   padding: 12px 20px;
   gap: 12px;
 }
-
-/* 搜索引擎切换按钮 */
 .engine-switch {
   width: 40px;
   height: 40px;
@@ -219,7 +113,6 @@ body::before {
   object-fit: contain;
   filter: brightness(0.9);
 }
-
 .search-input {
   flex: 1;
   background: transparent;
@@ -267,255 +160,6 @@ body::before {
   bottom: -2px;
   transform: rotate(45deg);
 }
-
-/* ======== 分类卡片 ======== */
-.category-grid {
-  width: 100%;
-  max-width: 1200px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
-  margin-bottom: 60px;
-}
-.category-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 28px;
-  transition: var(--trans-smooth);
-  position: relative;
-  overflow: hidden;
-}
-.category-card::before {
-  content: '';
-  position: absolute;
-  top: -50%; left: -50%;
-  width: 200%; height: 200%;
-  background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity var(--trans-smooth);
-  pointer-events: none;
-}
-.category-card:hover::before {
-  opacity: 0.03;
-}
-.category-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(182, 218, 62, 0.15);
-  border-color: var(--accent-primary);
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.card-title-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.card-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--accent-primary);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.card-title {
-  font-size: 1.4rem;
-  font-weight: 500;
-  color: var(--accent-primary);
-}
-
-/* 折叠按钮 */
-.toggle-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--trans-fast);
-  flex-shrink: 0;
-}
-.toggle-btn:hover {
-  border-color: var(--accent-primary);
-  transform: rotate(90deg);
-}
-.toggle-icon {
-  width: 16px;
-  height: 16px;
-  fill: var(--accent-primary);
-  transition: transform var(--trans-fast);
-}
-.toggle-btn.collapsed .toggle-icon {
-  transform: rotate(-90deg);
-}
-
-/* 内容区域 */
-.content-wrapper {
-  overflow: hidden;
-  transition: max-height var(--trans-smooth), opacity var(--trans-smooth);
-}
-.content-wrapper.collapsed {
-  max-height: 180px;
-  opacity: 0.8;
-}
-
-.video-list {
-  list-style: none;
-}
-.video-item {
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-.video-item:last-child {
-  border-bottom: none;
-}
-.video-link {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: var(--trans-fast);
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.95rem;
-}
-.video-link:hover {
-  background: rgba(182, 218, 62, 0.1);
-  color: var(--accent-glow);
-  transform: translateX(4px);
-}
-.video-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  background: rgba(182, 218, 62, 0.2);
-  border-radius: 12px;
-  font-size: 0.75rem;
-  margin-right: 8px;
-  color: var(--accent-primary);
-  white-space: nowrap;
-}
-
-/* ======== 资源导航 ======== */
-.resource-section {
-  width: 100%;
-  max-width: 1200px;
-  margin-bottom: 60px;
-}
-.section-title {
-  font-size: 1.8rem;
-  font-weight: 300;
-  text-align: center;
-  margin-bottom: 32px;
-  color: var(--accent-primary);
-  letter-spacing: 0.1em;
-}
-.resource-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
-}
-.resource-item {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  padding: 16px 12px;
-  display: flex;
-  align-items: center;
-  transition: var(--trans-fast);
-  text-decoration: none;
-  color: var(--text-secondary);
-  gap: 10px;
-  min-height: 56px;
-}
-.resource-item:hover {
-  border-color: var(--accent-primary);
-  transform: translateY(-2px);
-}
-.resource-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-.resource-name {
-  font-size: 0.9rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ======== 动画 ======== */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(50px); }
-  to { opacity: 1; transform: none; }
-}
-
-/* ======== 响应式 ======== */
-@media (max-width: 1200px) {
-  .profile-link {
-    flex: 0 1 calc(33.33% - 16px); /* 中等屏幕每行3个 */
-  }
-}
-@media (max-width: 768px) {
-  .main-title { font-size: 2.2rem; }
-  .category-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  .resource-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .profile-nav {
-    gap: 16px;
-    padding: 0 10px;
-    margin: -20px auto 40px;
-  }
-  .profile-link {
-    flex: 0 1 calc(50% - 8px); /* 小屏幕每行2个 */
-    min-width: auto;
-    max-width: none;
-  }
-  .profile-text {
-    font-size: 0.9rem;
-  }
-}
-@media (max-width: 480px) {
-  .profile-link {
-    flex: 0 1 100%; /* 超小屏幕每行1个 */
-  }
-}
-
-/* ======== 滚动条 ======== */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--accent-primary);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-glow);
-}
 </style>
 </head>
 <body>
@@ -550,19 +194,19 @@ body::before {
   <!-- 头像导航区域 -->
   <nav class="profile-nav">
     <a href="https://github.com/Ancylx" class="profile-link" target="_blank" rel="noopener" title="我的Github主页">
-      <img class="profile-avatar" src="./images/profile-avatar/Github头像ancylx.github.io.jpg" alt="GitHub头像">
+      <img class="profile-avatar" src="https://avatars.githubusercontent.com/u/183050286" alt="GitHub头像">
       <span class="profile-text">Github</span>
     </a>
     <a href="https://blog.csdn.net/2401_89870358" class="profile-link" target="_blank" rel="noopener" title="我的CSDN主页">
-      <img class="profile-avatar" src="./images/profile-avatar/CSDN头像ancylx.github.io.jpg" alt="CSDN头像">
+      <img class="profile-avatar" src="https://profile-avatar.csdnimg.cn/default.jpg" alt="CSDN头像">
       <span class="profile-text">CSDN</span>
     </a>
     <a href="https://space.bilibili.com/353809194" class="profile-link" target="_blank" rel="noopener" title="我的Bilibili主页">
-      <img class="profile-avatar" src="./images/profile-avatar/BiliBili头像ancylx.github.io.jpg" alt="B站头像">
+      <img class="profile-avatar" src="https://i1.hdslb.com/bfs/face/13b4dd3be335fc9762a8f549f461d3b83b0f18a6.jpg" alt="B站头像">
       <span class="profile-text">Bilibili</span>
     </a>
     <a href="https://www.zhihu.com/people/yycy-86" class="profile-link" target="_blank" rel="noopener" title="我的知乎主页">
-      <img class="profile-avatar" src="./images/profile-avatar/知乎头像ancylx.github.io.jpg" alt="知乎头像">
+      <img class="profile-avatar" src="https://pica.zhimg.com/v2-07faa543988ac8538d138ec237dca601.jpg" alt="知乎头像">
       <span class="profile-text">知乎</span>
     </a>
   </nav>
