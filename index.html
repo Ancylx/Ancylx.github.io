@@ -191,25 +191,54 @@
     </div>
   </section>
 
-  <!-- 头像导航区域 -->
-  <nav class="profile-nav">
-    <a href="https://github.com/Ancylx" class="profile-link" target="_blank" rel="noopener" title="我的Github主页">
-      <img class="profile-avatar" src="https://avatars.githubusercontent.com/u/183050286" alt="GitHub头像">
-      <span class="profile-text">Github</span>
+<!-- 个人主页导航区域（新布局） -->
+<section class="profile-container">
+  <!-- 左侧：GitHub大头像（带悬停预览） -->
+  <div class="profile-main">
+    <a href="https://www.baidu.com" target="_blank" rel="noopener" class="avatar-wrapper" title="点击查看详细介绍">
+      <img class="profile-avatar-large" 
+          src="https://avatars.githubusercontent.com/u/183050286" 
+          alt="GitHub头像">
+      <!-- 悬停预览浮层 -->
+      <div class="avatar-preview">
+        <img class="preview-image" 
+            src="https://avatars.githubusercontent.com/u/183050286" 
+            alt="预览">
+        <div class="preview-glow"></div>
+      </div>
     </a>
-    <a href="https://blog.csdn.net/2401_89870358" class="profile-link" target="_blank" rel="noopener" title="我的CSDN主页">
-      <img class="profile-avatar" src="https://profile-avatar.csdnimg.cn/default.jpg" alt="CSDN头像">
-      <span class="profile-text">CSDN</span>
+  </div>
+
+  <!-- 右侧：主页链接按钮列表 -->
+  <div class="profile-links">
+    <a href="https://github.com/Ancylx" 
+       class="profile-button" 
+       target="_blank" 
+       rel="noopener">
+      <span class="button-icon">🐙</span>
+      <span class="button-text">GitHub 主页</span>
+      <span class="button-arrow">→</span>
     </a>
-    <a href="https://space.bilibili.com/353809194" class="profile-link" target="_blank" rel="noopener" title="我的Bilibili主页">
-      <img class="profile-avatar" src="https://i1.hdslb.com/bfs/face/13b4dd3be335fc9762a8f549f461d3b83b0f18a6.jpg" alt="B站头像">
-      <span class="profile-text">Bilibili</span>
+    
+    <a href="https://space.bilibili.com/353809194" 
+       class="profile-button" 
+       target="_blank" 
+       rel="noopener">
+      <span class="button-icon">📺</span>
+      <span class="button-text">Bilibili 主页</span>
+      <span class="button-arrow">→</span>
     </a>
-    <a href="https://www.zhihu.com/people/yycy-86" class="profile-link" target="_blank" rel="noopener" title="我的知乎主页">
-      <img class="profile-avatar" src="https://pica.zhimg.com/v2-07faa543988ac8538d138ec237dca601.jpg" alt="知乎头像">
-      <span class="profile-text">知乎</span>
+
+    <!-- 扩展预留（当前隐藏） -->
+    <!--
+    <a href="#" class="profile-button hidden" target="_blank" rel="noopener">
+      <span class="button-icon">🌐</span>
+      <span class="button-text">新平台名称</span>
+      <span class="button-arrow">→</span>
     </a>
-  </nav>
+    -->
+  </div>
+</section>
 
   <!-- 程序开发类 -->
   <section class="category-grid">
@@ -628,13 +657,13 @@
 <script>
 // ======== 搜索引擎配置 ========
 const engines = [
-  { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/%3E%3C/svg%3E' },
-  { name: 'Google', url: 'https://www.google.com/search?q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/%3E%3Cpath fill="%23b6da3e" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/%3E%3Cpath fill="%23b6da3e" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/%3E%3Cpath fill="%23b6da3e" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/%3E%3C/svg%3E' },
-  { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/%3E%3C/svg%3E' },
-  { name: 'BiliBili', url: 'https://search.bilibili.com/all?keyword=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.996 1.528 2.255 1.574 3.773v7.647c-.054 1.51-.578 2.769-1.574 3.773-1.004.996-2.255 1.528-3.773 1.574h-4.5c-.48 0-.944-.188-1.3-.525-.356-.337-.556-.794-.556-1.27v-1.5H8.063c-.48 0-.944-.188-1.3-.525-.356-.337-.556-.794-.556-1.27v-1.5H4.5c-.663 0-1.5-.413-1.5-1.5v-1.5c0-.663.413-1.5 1.5-1.5h1.5V9.563c0-.476.188-.944.525-1.3.337-.356.794-.556 1.27-.556h8.25V4.653zm-4.5 10.125c-.663 0-1.5.413-1.5 1.5s.413 1.5 1.5 1.5 1.5-.413 1.5-1.5-.413-1.5-1.5-1.5zm4.5 0c-.663 0-1.5.413-1.5 1.5s.413 1.5 1.5 1.5 1.5-.413 1.5-1.5-.413-1.5-1.5-1.5z"/%3E%3C/svg%3E' },
-  { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M5.721 0C2.251 0 0 2.25 0 5.719V18.28C0 21.751 2.252 24 5.721 24h12.56C21.751 24 24 21.75 24 18.281V5.72C24 2.249 21.75 0 18.281 0zm1.964 4.078c-.271.73-.5 1.434-.68 2.11h5.587c.547-.01.955.048 1.225.168.27.12.455.291.556.513.1.222.127.469.08.65-.046.181-.147.326-.304.435-.157.11-.64.336-1.45.68-.81.342-1.364.669-1.66.98-.296.31-.457.708-.483 1.188-.025.48-.025.95 0 1.41.026.46.026.88 0 1.26-.026.38-.026.76 0 1.14.026.38.026.78 0 1.2-.026.42-.026.88 0 1.38l.05.553c.05.552.073 1.022.07 1.41-.003.387-.02.877-.05 1.47-.03.592-.047 1.212-.05 1.86-.003.647.014 1.277.05 1.89.036.61.05 1.18.04 1.703-.008.523-.008.92 0 1.19.01.27.01.48 0 .64-.01.16-.01.3 0 .42.01.12.01.28 0 .48l-.16 1.28c-.11.88-.23 1.767-.35 2.663-.12.896-.23 1.81-.34 2.74-.11.93-.2 1.877-.27 2.842-.07.965-.12 1.95-.17 2.955H7.2c.048-.965.102-1.91.162-2.835.06-.925.136-1.85.227-2.775.09-.925.196-1.86.318-2.805.12-.945.257-1.93.408-2.955.15-1.025.317-2.14.5-3.345.183-1.204.383-2.56.6-4.07h-3.44c.21-.6.46-1.19.75-1.77.29-.58.62-1.16.99-1.74.37-.58.77-1.18 1.2-1.8.43-.62.88-1.29 1.35-2.01.48-.72.97-1.51 1.47-2.37.5-.86 1.01-1.83 1.53-2.91.52-1.08 1.04-2.29 1.56-3.63.52-1.34 1.02-2.83 1.5-4.47z"/%3E%3Cpath fill="%23b6da3e" d="M18.901 20.052h-1.73v-1.84c-.05-.6-.05-1.2 0-1.8v-1.84h1.73v5.48zm0-7.02h-1.73V7.862c-.05-.6-.05-1.2 0-1.8V4.222h1.73v8.83z"/%3E%3C/svg%3E' },
-  { name: 'GitHub', url: 'https://github.com/search?q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M12 .5A12 12 0 0 0 0 12.82c0 5.34 3.44 9.86 8.21 11.47.6.12.82-.27.82-.6V20.7c-3.34.74-4.04-1.63-4.04-1.63-.55-1.41-1.36-1.78-1.36-1.78-1.11-.77.08-.76.08-.76 1.23.09 1.88 1.28 1.88 1.28 1.09 1.9 2.86 1.35 3.56 1.03.11-.8.42-1.35.76-1.66-2.67-.31-5.48-1.36-5.48-6.06 0-1.34.47-2.44 1.24-3.3-.12-.31-.54-1.56.12-3.25 0 0 1.01-.32 3.3 1.26a11.2 11.2 0 0 1 6 0c2.29-1.58 3.3-1.26 3.3-1.26.66 1.69.24 2.94.12 3.25.77.86 1.24 1.96 1.24 3.3 0 4.72-2.81 5.74-5.49 6.05.43.37.81 1.1.81 2.22v3.29c0 .34.22.73.82.6A12.2 12.2 0 0 0 24 12.82 12 12 0 0 0 12 .5z"/%3E%3C/svg%3E' },
-  { name: 'CSDN', url: 'https://so.csdn.net/so/search?spm=Null&urw=&q=', icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23b6da3e" d="M3 3h18v8H3z"/%3E%3Cpath fill="%23b6da3e" d="M3 13h18v8H3z"/%3E%3Cpath fill="%23b6da3e" d="M8 6h2v2H8zM8 16h2v2H8z"/%3E%3C/svg%3E' }
+  { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z\'/%3E%3C/svg%3E' },
+  { name: 'Google', url: 'https://www.google.com/search?q=', icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z\'/%3E%3C/svg%3E' },
+  { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z\'/%3E%3C/svg%3E' },
+  { name: 'BiliBili', url: 'https://search.bilibili.com/all?keyword=', icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.996 1.528 2.255 1.574 3.773v7.647c-.054 1.51-.578 2.769-1.574 3.773-1.004.996-2.255 1.528-3.773 1.574h-4.5c-.48 0-.944-.188-1.3-.525-.356-.337-.556-.794-.556-1.27v-1.5H8.063c-.48 0-.944-.188-1.3-.525-.356-.337-.556-.794-.556-1.27v-1.5H4.5c-.663 0-1.5-.413-1.5-1.5v-1.5c0-.663.413-1.5 1.5-1.5h1.5V9.563c0-.476.188-.944.525-1.3.337-.356.794-.556 1.27-.556h8.25V4.653zm-4.5 10.125c-.663 0-1.5.413-1.5 1.5s.413 1.5 1.5 1.5 1.5-.413 1.5-1.5-.413-1.5-1.5-1.5zm4.5 0c-.663 0-1.5.413-1.5 1.5s.413 1.5 1.5 1.5 1.5-.413 1.5-1.5-.413-1.5-1.5-1.5z\'/%3E%3C/svg%3E' },
+  { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M5.721 0C2.251 0 0 2.25 0 5.719V18.28C0 21.751 2.252 24 5.721 24h12.56C21.751 24 24 21.75 24 18.281V5.72C24 2.249 21.75 0 18.281 0zm1.964 4.078c-.271.73-.5 1.434-.68 2.11h5.587c.547-.01.955.048 1.225.168.27.12.455.291.556.513.1.222.127.469.08.65-.046.181-.147.326-.304.435-.157.11-.64.336-1.45.68-.81.342-1.364.669-1.66.98-.296.31-.457.708-.483 1.188-.025.48-.025.95 0 1.41.026.46.026.88 0 1.26-.026.38-.026.76 0 1.14.026.38.026.78 0 1.2-.026.42-.026.88 0 1.38l.05.553c.05.552.073 1.022.07 1.41-.003.387-.02.877-.05 1.47-.03.592-.047 1.212-.05 1.86-.003.647.014 1.277.05 1.89.036.61.05 1.18.04 1.703-.008.523-.008.92 0 1.19.01.27.01.48 0 .64-.01.16-.01.3 0 .42.01.12.01.28 0 .48l-.16 1.28c-.11.88-.23 1.767-.35 2.663-.12.896-.23 1.81-.34 2.74-.11.93-.2 1.877-.27 2.842-.07.965-.12 1.95-.17 2.955H7.2c.048-.965.102-1.91.162-2.835.06-.925.136-1.85.227-2.775.09-.925.196-1.86.318-2.805.12-.945.257-1.93.408-2.955.15-1.025.317-2.14.5-3.345.183-1.204.383-2.56.6-4.07h-3.44c.21-.6.46-1.19.75-1.77.29-.58.62-1.16.99-1.74.37-.58.77-1.18 1.2-1.8.43-.62.88-1.29 1.35-2.01.48-.72.97-1.51 1.47-2.37.5-.86 1.01-1.83 1.53-2.91.52-1.08 1.04-2.29 1.56-3.63.52-1.34 1.02-2.83 1.5-4.47z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M18.901 20.052h-1.73v-1.84c-.05-.6-.05-1.2 0-1.8v-1.84h1.73v5.48zm0-7.02h-1.73V7.862c-.05-.6-.05-1.2 0-1.8V4.222h1.73v8.83z\'/%3E%3C/svg%3E' },
+  { name: 'GitHub', url: 'https://github.com/search?q=', icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M12 .5A12 12 0 0 0 0 12.82c0 5.34 3.44 9.86 8.21 11.47.6.12.82-.27.82-.6V20.7c-3.34.74-4.04-1.63-4.04-1.63-.55-1.41-1.36-1.78-1.36-1.78-1.11-.77.08-.76.08-.76 1.23.09 1.88 1.28 1.88 1.28 1.09 1.9 2.86 1.35 3.56 1.03.11-.8.42-1.35.76-1.66-2.67-.31-5.48-1.36-5.48-6.06 0-1.34.47-2.44 1.24-3.3-.12-.31-.54-1.56.12-3.25 0 0 1.01-.32 3.3 1.26a11.2 11.2 0 0 1 6 0c2.29-1.58 3.3-1.26 3.3-1.26.66 1.69.24 2.94.12 3.25.77.86 1.24 1.96 1.24 3.3 0 4.72-2.81 5.74-5.49 6.05.43.37.81 1.1.81 2.22v3.29c0 .34.22.73.82.6A12.2 12.2 0 0 0 24 12.82 12 12 0 0 0 12 .5z\'/%3E%3C/svg%3E' },
+  { name: 'CSDN', url: 'https://so.csdn.net/so/search?spm=Null&urw=&q=', icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M3 3h18v8H3z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M3 13h18v8H3z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M8 6h2v2H8zM8 16h2v2H8z\'/%3E%3C/svg%3E' }
 ];
 
 let currentEngineIndex = 0;
@@ -701,6 +730,74 @@ document.querySelectorAll('.category-card').forEach(card => {
 
 // ======== 初始化 ========
 document.getElementById('engineSwitch').title = `当前: ${engines[0].name} (点击切换)`;
+
+// ======== 头像预览增强 - 防遮挡方案（移除发光层） ========
+(function() {
+  // 创建全局预览容器（单例模式）
+  let globalPreview = null;
+  let currentAvatar = null;
+  
+  function getGlobalPreview() {
+    if (!globalPreview) {
+      globalPreview = document.createElement('div');
+      globalPreview.className = 'avatar-preview-global';
+      globalPreview.innerHTML = `
+        <img class="preview-image-global" src="" alt="预览">
+        <!-- 移除了 preview-glow-global 发光层 -->
+      `;
+      document.documentElement.appendChild(globalPreview);
+    }
+    return globalPreview;
+  }
+  
+  // 绑定头像悬停事件
+  function setupAvatarPreview() {
+    const avatarWrapper = document.querySelector('.avatar-wrapper');
+    if (!avatarWrapper) return;
+    
+    const avatarImg = avatarWrapper.querySelector('.profile-avatar-large');
+    const globalPreview = getGlobalPreview();
+    const globalPreviewImg = globalPreview.querySelector('.preview-image-global');
+    
+    // 预加载图片
+    const imgSrc = avatarImg.src;
+    globalPreviewImg.src = imgSrc;
+    
+    // 鼠标进入事件
+    avatarWrapper.addEventListener('mouseenter', function() {
+      currentAvatar = this;
+      
+      // 更新预览图片源
+      if (globalPreviewImg.src !== imgSrc) {
+        globalPreviewImg.src = imgSrc;
+      }
+      
+      // 显示预览
+      globalPreview.classList.add('show');
+    });
+    
+    // 鼠标离开事件
+    avatarWrapper.addEventListener('mouseleave', function(e) {
+      // 检查是否真正离开（不是进入子元素）
+      if (!avatarWrapper.contains(e.relatedTarget)) {
+        globalPreview.classList.remove('show');
+        currentAvatar = null;
+      }
+    });
+    
+    // 点击事件（跳转链接）
+    avatarWrapper.addEventListener('click', function(e) {
+      globalPreview.classList.remove('show');
+    });
+  }
+  
+  // 页面加载完成后初始化
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupAvatarPreview);
+  } else {
+    setupAvatarPreview();
+  }
+})();
 </script>
 
 </body>

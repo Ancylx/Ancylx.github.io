@@ -354,3 +354,241 @@ body::before {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-glow);
 }
+
+/* ======== 个人主页导航区域（新布局） ======== */
+.profile-container {
+  width: 100%;
+  max-width: 800px;
+  margin: -40px auto 60px;
+  padding: 24px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: var(--glass-shadow);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 32px;
+  align-items: center;
+  animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+/* 左侧大头像区域 */
+.profile-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-avatar-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--accent-primary);
+  box-shadow: 0 0 20px rgba(182, 218, 62, 0.3);
+  transition: var(--trans-smooth);
+  object-fit: cover;
+}
+
+.profile-avatar-large:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px var(--accent-glow);
+}
+
+/* 右侧按钮列表 */
+.profile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-button {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(26, 36, 54, 0.6);  /* #1a2436 背景色调 */
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: var(--trans-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--accent-primary) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--trans-fast);
+}
+
+.profile-button:hover::before {
+  opacity: 0.1;
+}
+
+.profile-button:hover {
+  border-color: var(--accent-primary);
+  transform: translateX(8px);
+  box-shadow: var(--line-glow);
+  color: var(--accent-glow);
+}
+
+/* 按钮图标 */
+.button-icon {
+  font-size: 24px;
+  margin-right: 16px;
+  filter: drop-shadow(0 0 4px var(--accent-dim));
+}
+
+/* 按钮文字 */
+.button-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* 悬停箭头 */
+.button-arrow {
+  font-size: 1.5rem;
+  opacity: 0;
+  transition: opacity var(--trans-fast), transform var(--trans-fast);
+}
+
+.profile-button:hover .button-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+/* 隐藏占位按钮（不影响布局） */
+.profile-button.hidden {
+  display: none;
+}
+
+/* ======== 响应式设计 ======== */
+@media (max-width: 768px) {
+  .profile-container {
+    grid-template-columns: 1fr; /* 小屏幕改为上下布局 */
+    text-align: center;
+    gap: 24px;
+  }
+  
+  .profile-button {
+    grid-template-columns: auto 1fr auto;
+    justify-content: center;
+  }
+  
+  .profile-button:hover {
+    transform: translateY(-4px); /* 小屏幕改为向上浮动 */
+  }
+}
+
+/* ======== 头像悬停预览 - 移除旧样式 ========
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: zoom-in;
+}
+
+.avatar-preview {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 400px;
+  height: 400px;
+  border-radius: 16px;
+  pointer-events: none;
+  opacity: 0;
+  transition: var(--trans-smooth);
+  z-index: 9999;
+  will-change: transform, opacity;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  border: 3px solid var(--accent-primary);
+  box-shadow: 0 0 60px var(--accent-glow), 0 0 120px rgba(182, 218, 62, 0.4);
+  object-fit: contain;
+  background: rgba(26, 36, 54, 0.3);
+  filter: brightness(1.05) contrast(1.05);
+  position: relative;
+  z-index: 2;
+}
+
+.preview-glow {
+  position: absolute;
+  inset: -60px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  border-radius: 16px;
+  opacity: 0.6;
+  animation: previewPulse 2s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes previewPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.avatar-wrapper:hover .avatar-preview {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.profile-avatar-large:hover {
+  filter: brightness(1.1) saturate(1.1);
+  transform: scale(1.05);
+}
+*/
+
+/* ======== 头像悬停预览 - 新全局方案（无发光层） ======== */
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: zoom-in;
+}
+
+/* 隐藏原有的预览元素（JS会处理） */
+.avatar-preview {
+  display: none;
+}
+
+/* 全局预览容器 - 动态挂载到根层级 */
+.avatar-preview-global {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 400px;
+  height: 400px;
+  border-radius: 16px;
+  pointer-events: none;
+  opacity: 0;
+  transition: var(--trans-smooth);
+  z-index: 2147483647;
+  will-change: transform, opacity;
+  isolation: isolate;
+}
+
+.preview-image-global {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  border: 3px solid var(--accent-primary);
+  box-shadow: 0 0 60px var(--accent-glow), 0 0 120px rgba(182, 218, 62, 0.4);
+  object-fit: contain;
+  background: rgba(26, 36, 54, 0.3);
+  filter: brightness(1.05) contrast(1.05);
+}
+
+/* 悬停时显示预览 */
+.avatar-preview-global.show {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
