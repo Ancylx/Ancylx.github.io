@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>响应式图片展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        /* 图片容器 - 核心布局 */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-auto-rows: minmax(150px, auto);
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 图片基础样式 */
+        .gallery-img {
+            max-width: 100%;
+            height: auto;
+            width: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .gallery-img:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 短图样式（默认） */
+        .gallery-img--short {
+            max-height: 300px;
+        }
+
+        /* 长图样式 */
+        .gallery-img--long {
+            grid-row: span 2;
+            max-height: 600px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .image-gallery {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 10px;
+            }
+            
+            .gallery-img--short {
+                max-height: 200px;
+            }
+            
+            .gallery-img--long {
+                max-height: 400px;
+            }
+        }
+
+        /* 自定义尺寸工具类 */
+        .gallery-img--h-250 { max-height: 250px; }
+        .gallery-img--h-350 { max-height: 350px; }
+        .gallery-img--h-400 { max-height: 400px; }
+        .gallery-img--h-500 { max-height: 500px; }
+        .gallery-img--h-700 { max-height: 700px; }
+    </style>
+</head>
+<body>
+    <div class="image-gallery">
+        <!-- 短图示例（默认300px） -->
+        <img src="https://picsum.photos/400/300" 
+             alt="短图1" 
+             class="gallery-img gallery-img--short">
+        
+        <!-- 短图示例（自定义高度） -->
+        <img src="https://picsum.photos/400/300" 
+             alt="短图2" 
+             class="gallery-img gallery-img--short gallery-img--h-350">
+        
+        <!-- 长图示例（默认600px） -->
+        <img src="https://picsum.photos/300/600" 
+             alt="长图1" 
+             class="gallery-img gallery-img--long">
+        
+        <!-- 长图示例（自定义高度） -->
+        <img src="https://picsum.photos/300/700" 
+             alt="长图2" 
+             class="gallery-img gallery-img--long gallery-img--h-700">
+        
+        <!-- 更多图片... -->
+        <img src="https://picsum.photos/400/300" 
+             alt="短图3" 
+             class="gallery-img gallery-img--short">
+        
+        <img src="https://picsum.photos/400/300" 
+             alt="短图4" 
+             class="gallery-img gallery-img--short">
+    </div>
+</body>
+</html>
