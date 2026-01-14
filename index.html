@@ -1,10 +1,14 @@
 <!--
  * 星云日志 - 主入口页面
  * 部署地址：https://ancylx.github.io
- * 功能：技术导航、资源聚合、个人主页展示、多引擎搜索
- * 依赖：shared.css（全局样式表，v1.0.0）
- * 版本：v1.0.0
+ * 功能：技术导航、资源聚合、个人主页展示、多引擎搜索、内容预览
+ * 依赖：shared.css（全局样式表，v1.1.0）、preview-system.js（预览系统，v1.0.0）
+ * 版本：v1.1.0
  * 更新日志：
+ *   v1.1.0 (2025-01-14):
+ *     - feat: 集成通用悬停预览系统，支持多元素类型
+ *     - feat: 视频项添加data-preview-src属性，支持封面预览
+ *     - refactor: 提取预览逻辑为独立模块，提升可维护性
  *   v1.0.0 (2025-01-14):
  *     - feat: 实现双图源头像预览功能（thumb/hd分离）
  *     - feat: 添加搜索引擎切换功能（支持6个引擎）
@@ -56,19 +60,17 @@
             <!-- 左侧：GitHub大头像（带全局悬停预览） -->
             <div class="profile-main">
                 <!-- 
-                    头像包装器：承载双图源预览功能
-                    - data-avatar-thumb: 缩略图URL（页面初始显示）
-                    - data-avatar-hd: 高清预览图URL（悬停时加载显示）
-                    - 技术架构：参考PhotoShow插件，采用单例模式+延迟预加载
+                    头像包装器：承载预览触发功能
+                    - data-preview-src: 高清预览图URL（悬停时加载显示）
+                    - 技术架构：复用preview-system.js通用模块
                 -->
                 <a href="https://github.com/Ancylx/Ancylx.github.io" 
                    target="_blank" 
                    rel="noopener" 
-                   class="avatar-wrapper" 
+                   class="avatar-wrapper preview-trigger" 
                    title="查看GitHub项目"
-                   data-avatar-thumb="https://avatars.githubusercontent.com/u/183050286"
-                   data-avatar-hd="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/profile-avatar/yingchun-00000-1024.png">
-                    <!-- 缩略图：GitHub头像（页面加载时显示） -->
+                   data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/profile-avatar/yingchun-00000-1024.png">
+                    <!-- 缩略图：GitHub头像（页面初始显示） -->
                     <img class="profile-avatar-large" 
                          src="https://avatars.githubusercontent.com/u/183050286" 
                          alt="个人头像">
@@ -111,43 +113,81 @@
                 <!-- 可折叠内容区域 -->
                 <div class="content-wrapper collapsed" data-max-height="200">
                     <ul class="video-list">
+                        <!-- 
+                            视频项支持预览功能：
+                            - 添加preview-trigger类名
+                            - data-preview-src填写封面URL（优先显示）
+                            - 未填写则使用默认图片：https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/阿卡林.png
+                        -->
                         <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" class="video-link" target="_blank" rel="noopener">
+                            <a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" 
+                               class="video-link preview-trigger" 
+                               target="_blank" 
+                               rel="noopener"
+                               data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
                                 <span class="video-badge">Git</span>给傻子的Git教程
                             </a>
                         </li>
                         <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1sW81zbEkD" class="video-link" target="_blank" rel="noopener">
+                            <a href="https://www.bilibili.com/video/BV1sW81zbEkD" 
+                               class="video-link preview-trigger" 
+                               target="_blank" 
+                               rel="noopener"
+                               data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
                                 <span class="video-badge">进阶</span>Python类型注解为什么流行？
                             </a>
                         </li>
                         <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1WoGgeZEmc" class="video-link" target="_blank" rel="noopener">
+                            <a href="https://www.bilibili.com/video/BV1WoGgeZEmc" 
+                               class="video-link preview-trigger" 
+                               target="_blank" 
+                               rel="noopener"
+                               data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
                                 <span class="video-badge">环境</span>VScode + Anaconda配置
                             </a>
                         </li>
                         <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1Jgf6YvE8e" class="video-link" target="_blank" rel="noopener">
+                            <a href="https://www.bilibili.com/video/BV1Jgf6YvE8e" 
+                               class="video-link preview-trigger" 
+                               target="_blank" 
+                               rel="noopener"
+                               data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
                                 <span class="video-badge">入门</span>3小时快速入门Python
                             </a>
                         </li>
                         <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1qW4y1a7fU" class="video-link" target="_blank" rel="noopener">
+                            <a href="https://www.bilibili.com/video/BV1qW4y1a7fU" 
+                               class="video-link preview-trigger" 
+                               target="_blank" 
+                               rel="noopener"
+                               data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
                                 <span class="video-badge">系统</span>8天Python从入门到精通
                             </a>
                         </li>
                         <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1EHdUYEEEj" class="video-link" target="_blank" rel="noopener">
+                            <a href="https://www.bilibili.com/video/BV1EHdUYEEEj" 
+                               class="video-link preview-trigger" 
+                               target="_blank" 
+                               rel="noopener"
+                               data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
                                 <span class="video-badge">爬虫</span>50分钟快速入门Python爬虫
                             </a>
                         </li>
                         <li class="video-item">
-                            <a href="https://www.youtube.com/watch?v=I72uD8ED73U" class="video-link" target="_blank" rel="noopener">
+                            <a href="https://www.youtube.com/watch?v=I72uD8ED73U" 
+                               class="video-link preview-trigger" 
+                               target="_blank" 
+                               rel="noopener"
+                               data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
                                 <span class="video-badge">习惯</span>5个良好的Python习惯
                             </a>
                         </li>
                         <li class="video-item">
-                            <a href="https://www.youtube.com/watch?v=EoNOWVYKyo0" class="video-link" target="_blank" rel="noopener">
+                            <a href="https://www.youtube.com/watch?v=EoNOWVYKyo0" 
+                               class="video-link preview-trigger" 
+                               target="_blank" 
+                               rel="noopener"
+                               data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
                                 <span class="video-badge">技巧</span>Python 5个有用的F-String技巧
                             </a>
                         </li>
@@ -155,8 +195,7 @@
                 </div>
             </div>
 
-            <!-- 其他分类卡片...（保持原有结构，此处省略） -->
-            <!-- 实际项目中应保留所有分类，并添加相应注释 -->
+            <!-- 其他分类卡片...（实际项目中应保留所有分类，并添加相应注释） -->
         </section>
 
         <!-- -------------------- 资源导航区域（外部链接） -------------------- -->
@@ -184,7 +223,8 @@
 
     <!-- =================================================================== -->
     <!-- 功能脚本区域（交互逻辑） -->
-    <!-- 描述: 包含搜索引擎切换、搜索执行、分类折叠、头像预览等核心功能 -->
+    <!-- 描述: 包含搜索引擎切换、搜索执行、分类折叠等核心功能 -->
+    <!-- 说明: 通用预览系统已提取至preview-system.js -->
     <!-- =================================================================== -->
     <script>
         // ==================== 搜索引擎配置模块 ====================
@@ -269,147 +309,9 @@
 
         // 初始化搜索引擎提示文本
         engineSwitch.title = `当前: ${engines[0].name} (点击切换)`;
-
-        // ==================== 头像预览模块（双图源分离） ====================
-        // 架构说明: 参考PhotoShow插件设计，采用单例模式+延迟预加载策略
-        (function() {
-            'use strict';
-
-            // 全局配置常量
-            const PREVIEW_CONFIG = {
-                previewWidth: 400,      // 预览容器宽度
-                previewHeight: 400,     // 预览容器高度
-                preloadDelay: 150       // 预加载延迟（避免快速滑过时的无效请求）
-            };
-
-            // 状态管理（类似PhotoShow的viewer状态机）
-            const previewState = {
-                isShown: false,         // 预览显示状态
-                isLoading: false,       // 加载锁定（防止重复触发）
-                currentThumb: null,     // 当前缩略图元素
-                previewContainer: null, // 预览容器单例
-                preloadTimer: null      // 延迟加载定时器
-            };
-
-            // 创建全局预览容器（单例模式）
-            // 挂载到根层级避免z-index层叠问题
-            function createGlobalPreviewContainer() {
-                if (previewState.previewContainer) return previewState.previewContainer;
-
-                const container = document.createElement('div');
-                container.className = 'avatar-preview-global';
-                container.innerHTML = `
-                    <img class="preview-image-global" 
-                         src="" 
-                         alt="头像预览"
-                         loading="lazy">
-                `;
-                document.documentElement.appendChild(container);
-                previewState.previewContainer = container;
-                return container;
-            }
-
-            // 预加载高清图片（Promise封装）
-            function preloadHDSrc(hdSrc) {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    const timeout = setTimeout(() => reject(new Error('加载超时')), 10000);
-                    
-                    img.onload = () => {
-                        clearTimeout(timeout);
-                        resolve(hdSrc);
-                    };
-                    img.onerror = () => reject(new Error('图片加载失败'));
-                    img.src = hdSrc;
-                });
-            }
-
-            // 显示预览（带加载状态）
-            function showPreview(thumbElement, hdSrc) {
-                if (previewState.isLoading) return;
-                
-                previewState.isLoading = true;
-                previewState.currentThumb = thumbElement;
-                thumbElement.classList.add('avatar-loading');
-
-                const previewContainer = createGlobalPreviewContainer();
-                const previewImage = previewContainer.querySelector('.preview-image-global');
-
-                preloadHDSrc(hdSrc)
-                    .then(() => {
-                        previewImage.src = hdSrc;
-                        requestAnimationFrame(() => {
-                            previewContainer.classList.add('show');
-                            previewState.isShown = true;
-                        });
-                    })
-                    .catch(error => {
-                        console.warn('头像预览加载失败:', error);
-                    })
-                    .finally(() => {
-                        thumbElement.classList.remove('avatar-loading');
-                        previewState.isLoading = false;
-                    });
-            }
-
-            // 隐藏预览（带淡出动画）
-            function hidePreview() {
-                if (!previewState.previewContainer) return;
-                const previewContainer = previewState.previewContainer;
-                
-                previewContainer.classList.remove('show');
-                previewState.isShown = false;
-                previewState.currentThumb = null;
-
-                setTimeout(() => {
-                    const previewImage = previewContainer.querySelector('.preview-image-global');
-                    if (previewImage) previewImage.src = '';
-                }, 300);
-            }
-
-            // 初始化头像包装器事件
-            // 使用mouseenter/mouseleave避免子元素干扰
-            function initializeAvatarPreview() {
-                const avatarWrapper = document.querySelector('.avatar-wrapper');
-                if (!avatarWrapper) return;
-
-                const thumbSrc = avatarWrapper.dataset.avatarThumb;
-                const hdSrc = avatarWrapper.dataset.avatarHd;
-
-                if (!thumbSrc || !hdSrc) {
-                    console.warn('头像包装器缺少data-avatar-thumb或data-avatar-hd属性');
-                    return;
-                }
-
-                avatarWrapper.addEventListener('mouseenter', function() {
-                    if (previewState.preloadTimer) clearTimeout(previewState.preloadTimer);
-                    previewState.preloadTimer = setTimeout(() => showPreview(this, hdSrc), PREVIEW_CONFIG.preloadDelay);
-                });
-
-                avatarWrapper.addEventListener('mouseleave', function(e) {
-                    if (previewState.preloadTimer) {
-                        clearTimeout(previewState.preloadTimer);
-                        previewState.preloadTimer = null;
-                    }
-                    if (!this.contains(e.relatedTarget)) hidePreview();
-                });
-
-                avatarWrapper.addEventListener('click', () => hidePreview());
-
-                // ESC键全局隐藏预览
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && previewState.isShown) hidePreview();
-                });
-            }
-
-            // DOM准备完成后初始化
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initializeAvatarPreview);
-            } else {
-                initializeAvatarPreview();
-            }
-        })();
     </script>
 
+    <!-- 引入通用预览系统模块 -->
+    <script src="/preview-system.js"></script>
 </body>
 </html>

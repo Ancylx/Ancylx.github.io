@@ -3,9 +3,17 @@
  * GitHub Pages: https://ancylx.github.io
  * 主题色: #b6da3e (星云绿)
  * 描述: 集中管理所有页面样式，支持自动亮暗模式切换
- * 版本: v1.0.0
+ * 版本: v1.1.0
  * 更新日志:
- *   2025-01-14: 初始版本，整合所有组件样式
+ *   v1.1.0 (2025-01-14):
+ *     - feat: 添加通用预览系统样式（.preview-container-global）
+ *     - feat: 提取.preview-trigger基础样式，支持多元素复用
+ *     - refactor: 重命名.avatar-preview-global为.preview-container-global
+ *     - style: 补充预览加载状态动画与响应式适配
+ *   v1.0.0 (2025-01-14):
+ *     - feat: 整合所有组件样式，建立12级分层架构
+ *     - feat: 实现亮暗模式自动切换
+ *     - style: 规范化注释结构，符合项目注释规范
  */
 
 /* =================================================================== */
@@ -291,7 +299,7 @@ body::before {
 
 /* =================================================================== */
 /* 六、功能组件 - 个人主页导航 */
-/* 描述: 展示个人头像与社交平台链接，支持双图源预览 */
+/* 描述: 展示个人头像与社交平台链接，支持悬停预览 */
 /* 布局: 左侧头像，右侧垂直按钮列表 */
 /* =================================================================== */
 
@@ -408,25 +416,26 @@ body::before {
 }
 
 /* =================================================================== */
-/* 七、功能组件 - 头像全局悬停预览 */
-/* 描述: 支持双图源分离（thumb/hd）的放大预览功能 */
-/* 架构: 参考PhotoShow插件设计，使用单例模式 */
-/* 性能: 延迟预加载，避免无效请求 */
+/* 七、通用组件 - 全局悬停预览系统 */
+/* 描述: 支持多元素类型（头像、视频项等）的统一预览组件 */
+/* 架构: 单例模式+延迟预加载，参考PhotoShow插件设计 */
+/* 性能: 共享同一容器，避免重复DOM创建与内存泄漏 */
+/* 复用说明: 任何元素添加.preview-trigger类与data-preview-src属性即可启用 */
+/* 维护: 此样式与preview-system.js强耦合，修改需同步 */
 /* =================================================================== */
 
-.avatar-wrapper {
+/* 预览触发器基础样式 */
+.preview-trigger {
     position: relative;
-    display: inline-block;
     cursor: zoom-in;
-}
-
-/* 隐藏旧的预览元素（由JS动态处理） */
-.avatar-preview {
-    display: none;
+    transition: var(--trans-fast);
 }
 
 /* 全局预览容器 - 挂载到根层级避免遮挡 */
-.avatar-preview-global {
+/* 功能: 单例模式，所有预览共享此容器 */
+/* 层级: z-index最高值2147483647，确保最上层显示 */
+/* 动画: 从scale(0)到scale(1)的平滑缩放 */
+.preview-container-global {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -442,29 +451,32 @@ body::before {
     isolation: isolate; /* 创建新层叠上下文 */
 }
 
-/* 预览图片样式 - 边缘光晕降低至50%透明度 */
+/* 预览图片样式 - 保持原始比例完整显示 */
+/* 功能: 带星云绿边框与光晕，object-fit避免拉伸 */
+/* 性能: GPU加速渲染，filter增强视觉效果 */
 .preview-image-global {
     width: 100%;
     height: 100%;
     border-radius: 16px;
     border: 3px solid var(--accent-primary);
-    /* 光晕强度降低50%：原rgba(182, 218, 62, 0.4) -> 0.2 */
+    /* 光晕强度降低50%：原rgba(182, 218, 62, 0.4) -> 0.2，符合设计规范 */
     box-shadow: 0 0 60px var(--accent-glow), 0 0 120px rgba(182, 218, 62, 0.2);
     object-fit: contain;
     background: rgba(26, 36, 54, 0.3);
     filter: brightness(1.05) contrast(1.05);
 }
 
-/* 显示预览 */
-.avatar-preview-global.show {
+/* 显示预览 - 缩放动画从0到1，透明度从0到1 */
+.preview-container-global.show {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
 }
 
 /* =================================================================== */
 /* 八、内容组件 - 技术分类卡片 */
-/* 描述: 展示技术分类与相关资源链接，支持折叠展开 */
-/* 交互: 悬停上浮，点击切换折叠状态 */
+/* 描述: 展示技术分类与相关资源链接，支持折叠展开与预览 */
+/* 交互: 悬停上浮，点击切换折叠状态，视频项悬停显示封面预览 */
+/* 数据: 视频项通过data-preview-src属性指定封面图片 */
 /* =================================================================== */
 
 /* 分类卡片网格容器 */
@@ -605,7 +617,9 @@ body::before {
     border-bottom: none;
 }
 
-/* 视频链接 */
+/* 视频链接 - 支持预览触发 */
+/* 功能: 悬停时右移4px，并触发封面预览（由preview-system.js处理） */
+/* 数据: 通过data-preview-src属性指定封面图片 */
 .video-link {
     display: flex;
     align-items: center;
@@ -742,7 +756,7 @@ body::before {
 }
 
 /* 小屏幕（手机） - 480px断点 */
-/* 策略: 进一步缩小元素尺寸，网格变为单列 */
+/* 策略: 缩小头像与预览容器尺寸，网格变为单列 */
 @media (max-width: 480px) {
     .main-container {
         padding: 30px 15px;
@@ -753,7 +767,7 @@ body::before {
         height: 100px;
     }
     
-    .preview-image-global {
+    .preview-container-global {
         width: 300px;
         height: 300px;
     }
@@ -821,25 +835,20 @@ body::before {
 }
 
 /* =================================================================== */
-/* 十三、头像预览加载状态 */
-/* 描述: 预览加载时的视觉反馈 */
-/* 功能: 显示旋转动画，提示用户正在加载 */
+/* 十三、预览加载状态 - 通用旋转动画 */
+/* 描述: 预览加载时的视觉反馈，适用于所有.preview-trigger元素 */
+/* 功能: 透明度降低并显示旋转指示器，提示用户正在加载 */
+/* 性能: 使用伪元素+CSS动画，避免额外DOM操作 */
 /* =================================================================== */
 
-.avatar-wrapper {
-    position: relative;
-    display: inline-block;
-    cursor: zoom-in;
-}
-
-/* 加载动画 - 透明度降低并显示旋转指示器 */
-.avatar-loading {
+/* 加载状态 - 透明度降低并添加旋转指示器 */
+.preview-loading {
     opacity: 0.7;
     transition: opacity var(--trans-fast);
 }
 
 /* 旋转指示器 - 使用边框动画实现 */
-.avatar-loading::after {
+.preview-loading::after {
     content: '';
     position: absolute;
     top: 50%;
