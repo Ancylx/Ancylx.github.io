@@ -3,8 +3,12 @@
  * GitHub Pages: https://ancylx.github.io
  * 主题色: #b6da3e (星云绿)
  * 描述: 集中管理所有页面样式，支持自动亮暗模式切换
- * 版本: v1.1.0
+ * 版本: v1.2.0
  * 更新日志:
+ *   v1.2.0 (2025-01-14):
+ *     - feat: 重构video-link布局为flex双向对齐模式，video-title左对齐，video-badges右对齐
+ *     - feat: 新增video-badges容器组件，支持flex-direction: row-reverse实现标签从右向左排列
+ *     - refactor: 优化多标签场景下的视觉对齐一致性，提升内容可读性
  *   v1.1.0 (2025-01-14):
  *     - feat: 添加通用预览系统样式（.preview-container-global）
  *     - feat: 提取.preview-trigger基础样式，支持多元素复用
@@ -618,11 +622,15 @@ body::before {
 }
 
 /* 视频链接 - 支持预览触发 */
-/* 功能: 悬停时右移4px，并触发封面预览（由preview-system.js处理） */
+/* 功能: 采用flex双向布局，video-title左对齐占据剩余空间，video-badges右对齐 */
+/* 交互: 悬停时右移4px（视觉反馈），并触发封面预览（由preview-system.js处理） */
 /* 数据: 通过data-preview-src属性指定封面图片 */
+/* 布局: justify-content: space-between确保两端对齐，gap: 8px保持间距 */
 .video-link {
     display: flex;
+    justify-content: space-between;
     align-items: center;
+    gap: 8px;
     padding: 8px 12px;
     border-radius: 8px;
     transition: var(--trans-fast);
@@ -637,15 +645,36 @@ body::before {
     transform: translateX(4px);
 }
 
+/* 视频标题 - 左对齐，占据flex剩余空间 */
+/* 功能: flex: 1确保标题区域自适应伸缩，text-align: left保持左对齐 */
+/* 排版: 允许换行显示完整标题，word-break: break-word防止长单词溢出 */
+.video-title {
+    flex: 1;
+    text-align: left;
+    word-break: break-word;
+}
+
+/* 视频标签容器 - 右对齐，子元素从右向左排列 */
+/* 功能: display: flex创建水平布局，flex-direction: row-reverse实现标签从右向左排列 */
+/* 性能: gap: 4px保持标签间距，flex-shrink: 0防止容器被压缩 */
+/* 布局: 多个标签时自动向右扩展，与video-title形成视觉边界 */
+.video-badges {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
 /* 视频标签徽章 */
 /* 功能: 标识视频类型，增强信息密度 */
+/* 样式: 继承自原有video-badge样式，保持视觉一致性 */
 .video-badge {
     display: inline-block;
     padding: 2px 8px;
     background: rgba(182, 218, 62, 0.2);
     border-radius: 12px;
     font-size: 0.75rem;
-    margin-right: 8px;
     color: var(--accent-primary);
     white-space: nowrap;
     font-weight: 500;

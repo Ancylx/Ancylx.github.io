@@ -2,9 +2,12 @@
  * 星云日志 - 主入口页面
  * 部署地址：https://ancylx.github.io
  * 功能：技术导航、资源聚合、个人主页展示、多引擎搜索、内容预览
- * 依赖：shared.css（全局样式表，v1.1.0）、preview-system.js（预览系统，v1.0.0）
- * 版本：v1.1.0
+ * 依赖：shared.css（全局样式表，v1.2.0）、preview-system.js（预览系统，v1.0.0）
+ * 版本：v1.2.0
  * 更新日志：
+ *   v1.2.0 (2025-01-14):
+ *     - feat: 重构video-link布局结构，支持多标签右对齐排列
+ *     - refactor: 将video-badge从行内元素改为独立容器布局，提升视觉对齐一致性
  *   v1.1.0 (2025-01-14):
  *     - feat: 集成通用悬停预览系统，支持多元素类型
  *     - feat: 视频项添加data-preview-src属性，支持封面预览
@@ -118,6 +121,7 @@
                             - 添加preview-trigger类名
                             - data-preview-src填写封面URL（优先显示）
                             - 未填写则使用默认图片：https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/阿卡林.png
+                            - 结构说明：video-link采用flex双向布局，video-title左对齐，video-badges右对齐且标签从右向左排列
                         -->
                         <li class="video-item">
                             <a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" 
@@ -125,7 +129,11 @@
                                target="_blank" 
                                rel="noopener"
                                data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
-                                <span class="video-badge">Git</span>给傻子的Git教程
+                                <span class="video-title">给傻子的Git教程</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">Git</span>
+                                    <span class="video-badge">教程</span>
+                                </div>
                             </a>
                         </li>
                         <li class="video-item">
@@ -134,7 +142,10 @@
                                target="_blank" 
                                rel="noopener"
                                data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
-                                <span class="video-badge">进阶</span>Python类型注解为什么流行？
+                                <span class="video-title">Python类型注解为什么流行？</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">进阶</span>
+                                </div>
                             </a>
                         </li>
                         <li class="video-item">
@@ -143,7 +154,10 @@
                                target="_blank" 
                                rel="noopener"
                                data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
-                                <span class="video-badge">环境</span>VScode + Anaconda配置
+                                <span class="video-title">VScode + Anaconda配置</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">环境</span>
+                                </div>
                             </a>
                         </li>
                         <li class="video-item">
@@ -152,7 +166,10 @@
                                target="_blank" 
                                rel="noopener"
                                data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
-                                <span class="video-badge">入门</span>3小时快速入门Python
+                                <span class="video-title">3小时快速入门Python</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">入门</span>
+                                </div>
                             </a>
                         </li>
                         <li class="video-item">
@@ -161,7 +178,10 @@
                                target="_blank" 
                                rel="noopener"
                                data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
-                                <span class="video-badge">系统</span>8天Python从入门到精通
+                                <span class="video-title">8天Python从入门到精通</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">系统</span>
+                                </div>
                             </a>
                         </li>
                         <li class="video-item">
@@ -170,7 +190,10 @@
                                target="_blank" 
                                rel="noopener"
                                data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
-                                <span class="video-badge">爬虫</span>50分钟快速入门Python爬虫
+                                <span class="video-title">50分钟快速入门Python爬虫</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">爬虫</span>
+                                </div>
                             </a>
                         </li>
                         <li class="video-item">
@@ -179,7 +202,10 @@
                                target="_blank" 
                                rel="noopener"
                                data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
-                                <span class="video-badge">习惯</span>5个良好的Python习惯
+                                <span class="video-title">5个良好的Python习惯</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">习惯</span>
+                                </div>
                             </a>
                         </li>
                         <li class="video-item">
@@ -188,7 +214,10 @@
                                target="_blank" 
                                rel="noopener"
                                data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png">
-                                <span class="video-badge">技巧</span>Python 5个有用的F-String技巧
+                                <span class="video-title">Python 5个有用的F-String技巧</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">技巧</span>
+                                </div>
                             </a>
                         </li>
                     </ul>
@@ -224,7 +253,7 @@
     <!-- =================================================================== -->
     <!-- 功能脚本区域（交互逻辑） -->
     <!-- 描述: 包含搜索引擎切换、搜索执行、分类折叠等核心功能 -->
-    <!-- 说明: 通用预览系统已提取至preview-system.js -->
+    <!-- 说明: 通用预览系统已提取至preview-system.js；video-link结构变更不影响脚本逻辑 -->
     <!-- =================================================================== -->
     <script>
         // ==================== 搜索引擎配置模块 ====================
