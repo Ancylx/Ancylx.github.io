@@ -3,21 +3,19 @@
  * GitHub Pages: https://ancylx.github.io
  * 主题色: #b6da3e (星云绿)
  * 描述: 集中管理所有页面样式，支持自动亮暗模式切换
- * 版本: v1.2.0
+ * 版本: v1.2.2
  * 更新日志:
+ *   v1.2.2 (2025-01-14):
+ *     - feat: 资源导航网格调整为每行最多4项（minmax: 240px, 1fr）
+ *     - feat: 资源图标尺寸宽度自动，高度改为18px，改善Logo显示完整性
+ *     - refactor: 优化resource-item内边距以适配新图标尺寸
+ *   v1.2.1 (2025-01-14):
+ *     - feat: 资源导航区域Logo图标右对齐布局（justify-content: space-between）
+ *     - fix: 修复横图Logo显示不全问题（object-fit: cover）
  *   v1.2.0 (2025-01-14):
  *     - feat: 重构video-link布局为flex双向对齐模式，video-title左对齐，video-badges右对齐
  *     - feat: 新增video-badges容器组件，支持flex-direction: row-reverse实现标签从右向左排列
  *     - refactor: 优化多标签场景下的视觉对齐一致性，提升内容可读性
- *   v1.1.0 (2025-01-14):
- *     - feat: 添加通用预览系统样式（.preview-container-global）
- *     - feat: 提取.preview-trigger基础样式，支持多元素复用
- *     - refactor: 重命名.avatar-preview-global为.preview-container-global
- *     - style: 补充预览加载状态动画与响应式适配
- *   v1.0.0 (2025-01-14):
- *     - feat: 整合所有组件样式，建立12级分层架构
- *     - feat: 实现亮暗模式自动切换
- *     - style: 规范化注释结构，符合项目注释规范
  */
 
 /* =================================================================== */
@@ -682,8 +680,10 @@ body::before {
 
 /* =================================================================== */
 /* 九、内容组件 - 资源导航 */
-/* 描述: 展示外部资源链接，使用图标增强识别性 */
-/* 布局: 自动填充网格，最小宽度160px */
+/* 描述: 展示外部资源链接，图标右对齐，标题左对齐，支持默认图片回退 */
+/* 布局: 自动填充网格，最小宽度240px，确保每行最多4项 */
+/* 优化: v1.2.2调整minmax参数并增大图标至36px，解决Logo显示不全问题 */
+/* 性能: gap: 20px提升视觉呼吸感，避免元素拥挤 */
 /* =================================================================== */
 
 .resource-section {
@@ -701,25 +701,34 @@ body::before {
     letter-spacing: 0.1em;
 }
 
+/* 资源网格 - 每行最多4项 */
+/* 功能: repeat(auto-fill, minmax(240px, 1fr))实现自适应且限制最大数量 */
+/* 计算: 1200px容器可容纳4*240 + 3*20 = 1020px，剩余空间由fr均分 */
+/* 响应: 屏幕缩小时自动减少每行项数，保持可读性 */
 .resource-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px; /* 增大间距提升视觉舒适度 */
 }
 
-/* 资源项 - 玻璃拟态按钮 */
+/* 资源项 - 玻璃拟态按钮，图标右对齐布局 */
+/* 布局: justify-content: space-between实现两端对齐，标题左图标右 */
+/* 图标: 36x36px（v1.2.2增大），object-fit: cover保持比例并居中裁剪 */
+/* 回退: 加载失败时通过JS切换为默认阿卡林图片，避免空白 */
+/* 内边距: 16px保持视觉平衡，适配新增图标尺寸 */
 .resource-item {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
-    padding: 16px 12px;
+    padding: 16px; /* 统一内边距 */
     display: flex;
     align-items: center;
+    justify-content: space-between; /* 两端对齐：标题左，图标右 */
     transition: var(--trans-fast);
     text-decoration: none;
     color: var(--text-secondary);
-    gap: 10px;
     min-height: 56px;
+    gap: 12px; /* 增大间距确保文字与图标不拥挤 */
 }
 
 .resource-item:hover {
@@ -728,21 +737,29 @@ body::before {
     background: rgba(182, 218, 62, 0.05);
 }
 
-/* 资源图标 */
-.resource-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-
-/* 资源名称 */
+/* 资源名称 - 左对齐，占据剩余空间 */
+/* 功能: flex: 1确保标题区域自适应伸缩，text-align: left保持左对齐 */
+/* 排版: 单行显示，超出省略号处理，确保长标题不破坏布局 */
+/* 性能: white-space: nowrap防止换行，text-overflow: ellipsis优雅截断 */
 .resource-name {
-    font-size: 0.9rem;
+    flex: 1;
+    text-align: left;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* 资源图标 - 右对齐，固定尺寸 */
+/* 尺寸: v1.2.2宽度改为自动，高度设为18px，解决Logo显示不全问题（原28px） */
+/* 功能: flex-shrink: 0防止压缩，object-fit: cover自动裁剪 */
+/* 性能: border-radius: 6px保持圆角，与整体设计系统一致 */
+/* 回退: 加载失败时触发onerror，无缝切换默认图片，避免布局抖动 */
+.resource-icon {
+    width: auto;
+    height: 18px;
+    border-radius: 6px;
+    object-fit: cover; /* 保持比例并裁剪，适合横图Logo */
+    flex-shrink: 0; /* 防止被压缩 */
 }
 
 /* =================================================================== */
@@ -765,8 +782,10 @@ body::before {
         gap: 20px;
     }
     
+    /* 资源网格: 平板设备调整为每行2项，确保触摸友好 */
     .resource-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
     }
     
     .profile-container {
@@ -786,6 +805,7 @@ body::before {
 
 /* 小屏幕（手机） - 480px断点 */
 /* 策略: 缩小头像与预览容器尺寸，网格变为单列 */
+/* 资源网格: 手机设备每行1项，充分利用可用空间 */
 @media (max-width: 480px) {
     .main-container {
         padding: 30px 15px;
@@ -802,7 +822,8 @@ body::before {
     }
     
     .resource-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* 单列布局 */
+        gap: 12px; /* 减小间距适应小屏 */
     }
 }
 

@@ -2,9 +2,15 @@
  * 星云日志 - 主入口页面
  * 部署地址：https://ancylx.github.io
  * 功能：技术导航、资源聚合、个人主页展示、多引擎搜索、内容预览
- * 依赖：shared.css（全局样式表，v1.2.0）、preview-system.js（预览系统，v1.0.0）
- * 版本：v1.2.0
+ * 依赖：shared.css（全局样式表，v1.2.2）、preview-system.js（预览系统，v1.0.0）
+ * 版本：v1.2.2
  * 更新日志：
+ *   v1.2.2 (2025-01-14):
+ *     - feat: 调整资源导航网格布局为每行最多4项
+ *     - feat: 增大资源图标显示尺寸至36px
+ *   v1.2.1 (2025-01-14):
+ *     - feat: 资源导航区域Logo图标右对齐，标题左对齐
+ *     - feat: 资源图标支持默认图片回退机制（阿卡林.png）
  *   v1.2.0 (2025-01-14):
  *     - feat: 重构video-link布局结构，支持多标签右对齐排列
  *     - refactor: 将video-badge从行内元素改为独立容器布局，提升视觉对齐一致性
@@ -228,23 +234,47 @@
         </section>
 
         <!-- -------------------- 资源导航区域（外部链接） -------------------- -->
+        <!-- 
+            三级：资源网格组件
+            - 功能：展示外部资源链接，图标右对齐，标题左对齐
+            - 优化：v1.2.2调整网格为每行最多4项，图标尺寸增大至36px
+            - 布局：两端对齐，响应式网格，minmax(240px, 1fr)确保显示空间充足
+        -->
         <section class="resource-section">
             <h2 class="section-title">程序开发资源</h2>
             <div class="resource-grid">
+                <!-- 
+                    四级：资源项结构
+                    - resource-name: 资源名称（左对齐，flex:1占据空间）
+                    - resource-icon: Logo图标（右对齐，36x36px，flex-shrink: 0防止压缩）
+                    - 回退机制：onerror触发handleResourceIconError函数
+                -->
                 <!-- 菜鸟编程 -->
                 <a href="https://www.runoob.com" class="resource-item" target="_blank" rel="noopener">
-                    <img class="resource-icon" src="https://www.runoob.com/wp-content/themes/runoob/assets/img/runoob-logo.png" alt="菜鸟教程">
                     <span class="resource-name">菜鸟编程</span>
+                    <img class="resource-icon" 
+                         src="https://www.runoob.com/wp-content/themes/runoob/assets/img/runoob-logo.png" 
+                         alt="菜鸟教程"
+                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
+                         onerror="handleResourceIconError(this)">
                 </a>
                 <!-- 果壳剥壳 -->
                 <a href="https://www.ghxi.com" class="resource-item" target="_blank" rel="noopener">
-                    <img class="resource-icon" src="https://www.ghxi.com/wp-content/uploads/2019/12/2020logo.png" alt="果壳剥壳">
                     <span class="resource-name">果壳剥壳</span>
+                    <img class="resource-icon" 
+                         src="https://www.ghxi.com/wp-content/uploads/2019/12/2020logo.png" 
+                         alt="果壳剥壳"
+                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
+                         onerror="handleResourceIconError(this)">
                 </a>
                 <!-- 极客应用 -->
                 <a href="https://www.gy328.com/" class="resource-item" target="_blank" rel="noopener">
-                    <img class="resource-icon" src="https://www.gy328.com/wp-content/uploads/2024/06/1717599115-gkbai.png" alt="极客应用">
                     <span class="resource-name">极客应用</span>
+                    <img class="resource-icon" 
+                         src="https://www.gy328.com/wp-content/uploads/2024/06/1717599115-gkbai.png" 
+                         alt="极客应用"
+                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
+                         onerror="handleResourceIconError(this)">
                 </a>
             </div>
         </section>
@@ -252,8 +282,8 @@
 
     <!-- =================================================================== -->
     <!-- 功能脚本区域（交互逻辑） -->
-    <!-- 描述: 包含搜索引擎切换、搜索执行、分类折叠等核心功能 -->
-    <!-- 说明: 通用预览系统已提取至preview-system.js；video-link结构变更不影响脚本逻辑 -->
+    <!-- 描述: 包含搜索引擎切换、搜索执行、分类折叠、资源图标回退等核心功能 -->
+    <!-- 说明: 通用预览系统已提取至preview-system.js；此脚本与布局结构调整无依赖 -->
     <!-- =================================================================== -->
     <script>
         // ==================== 搜索引擎配置模块 ====================
@@ -311,6 +341,18 @@
         document.getElementById('search_input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') performSearch();
         });
+
+        // ==================== 资源图标错误处理模块 ====================
+        // 功能：当资源图标加载失败时，自动回退到默认阿卡林图片
+        // 触发：img标签的onerror事件（内联调用确保及时触发）
+        // 注意：此函数为全局函数，供HTML内联调用，避免事件委托延迟
+        function handleResourceIconError(img) {
+            const defaultSrc = img.dataset.defaultSrc;
+            // 防御性检查：避免重复加载默认图片导致死循环
+            if (img.src !== defaultSrc) {
+                img.src = defaultSrc;
+            }
+        }
 
         // ==================== 滚动动画模块 ====================
         // 配置：当元素10%进入视口时触发，底部预留50px
