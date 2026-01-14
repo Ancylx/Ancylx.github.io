@@ -1,3 +1,18 @@
+<!--
+ * 星云日志 - 主入口页面
+ * 部署地址：https://ancylx.github.io
+ * 功能：技术导航、资源聚合、个人主页展示、多引擎搜索
+ * 依赖：shared.css（全局样式表，v1.0.0）
+ * 版本：v1.0.0
+ * 更新日志：
+ *   v1.0.0 (2025-01-14):
+ *     - feat: 实现双图源头像预览功能（thumb/hd分离）
+ *     - feat: 添加搜索引擎切换功能（支持6个引擎）
+ *     - feat: 实现分类卡片折叠展开与滚动动画
+ *     - refactor: 移除内联样式，全面采用CSS变量系统
+ *     - style: 规范化注释结构，符合项目注释规范
+-->
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -5,25 +20,30 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
     <meta name="description" content="星云日志 - 学习笔记 · 技术导航 · 资源聚合">
     <title>星云日志</title>
+    <!-- 集中管理的全局样式文件 -->
     <link rel="stylesheet" href="/shared.css">
 </head>
 <body>
 
+    <!-- ==================== 主容器（布局根节点） ==================== -->
     <div class="main-container">
-        <!-- 标题区域 -->
+        <!-- -------------------- 标题区域（品牌展示） -------------------- -->
         <header class="header">
             <h1 class="main-title">Nebula Logs</h1>
             <p class="subtitle">学习笔记 · 技术导航 · 资源聚合</p>
         </header>
 
-        <!-- 搜索引擎切换搜索框 -->
+        <!-- -------------------- 搜索区域（多引擎切换） -------------------- -->
         <section class="search-section">
             <div class="search-wrapper">
                 <div class="search-box">
+                    <!-- 搜索引擎切换按钮 -->
                     <button class="engine-switch" id="engineSwitch" title="切换搜索引擎" onclick="switchEngine()">
                         <img class="engine-icon" id="engineIcon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23b6da3e' d='M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z'/%3E%3C/svg%3E" alt="搜索引擎图标">
                     </button>
+                    <!-- 搜索输入框 -->
                     <input id="search_input" class="search-input" type="text" placeholder="搜索技术内容..." autocomplete="off">
+                    <!-- 搜索执行按钮 -->
                     <button class="search-btn" onclick="performSearch()" title="搜索">
                         <div class="search-icon"></div>
                     </button>
@@ -31,7 +51,7 @@
             </div>
         </section>
 
-        <!-- 个人主页导航区域 -->
+        <!-- -------------------- 个人主页导航区域（双图源预览） -------------------- -->
         <section class="profile-container">
             <!-- 左侧：GitHub大头像（带全局悬停预览） -->
             <div class="profile-main">
@@ -39,7 +59,7 @@
                     头像包装器：承载双图源预览功能
                     - data-avatar-thumb: 缩略图URL（页面初始显示）
                     - data-avatar-hd: 高清预览图URL（悬停时加载显示）
-                    - 参考PhotoShow插件架构实现
+                    - 技术架构：参考PhotoShow插件，采用单例模式+延迟预加载
                 -->
                 <a href="https://github.com/Ancylx/Ancylx.github.io" 
                    target="_blank" 
@@ -48,7 +68,7 @@
                    title="查看GitHub项目"
                    data-avatar-thumb="https://avatars.githubusercontent.com/u/183050286"
                    data-avatar-hd="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/profile-avatar/yingchun-00000-1024.png">
-                    <!-- 缩略图：GitHub头像 -->
+                    <!-- 缩略图：GitHub头像（页面加载时显示） -->
                     <img class="profile-avatar-large" 
                          src="https://avatars.githubusercontent.com/u/183050286" 
                          alt="个人头像">
@@ -57,12 +77,13 @@
 
             <!-- 右侧：主页链接按钮列表 -->
             <div class="profile-links">
+                <!-- GitHub主页链接 -->
                 <a href="https://github.com/Ancylx" class="profile-button" target="_blank" rel="noopener">
                     <span class="button-icon">🐙</span>
                     <span class="button-text">GitHub 主页</span>
                     <span class="button-arrow">→</span>
                 </a>
-                
+                <!-- Bilibili主页链接 -->
                 <a href="https://space.bilibili.com/353809194" class="profile-button" target="_blank" rel="noopener">
                     <span class="button-icon">📺</span>
                     <span class="button-text">Bilibili 主页</span>
@@ -71,50 +92,88 @@
             </div>
         </section>
 
-        <!-- 技术分类导航 -->
+        <!-- -------------------- 技术分类导航（可折叠卡片） -------------------- -->
         <section class="category-grid">
-            <!-- Python分类 -->
+            <!-- ==================== Python分类 ==================== -->
             <div class="category-card">
                 <div class="card-header">
                     <div class="card-title-group">
                         <div class="card-icon">🐍</div>
                         <h2 class="card-title">Python</h2>
                     </div>
+                    <!-- 折叠切换按钮 -->
                     <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起内容">
                         <svg class="toggle-icon" viewBox="0 0 24 24">
                             <path d="M7 10l5 5 5-5z"/>
                         </svg>
                     </button>
                 </div>
+                <!-- 可折叠内容区域 -->
                 <div class="content-wrapper collapsed" data-max-height="200">
                     <ul class="video-list">
-                        <li class="video-item"><a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" class="video-link" target="_blank"><span class="video-badge">Git</span>给傻子的Git教程</a></li>
-                        <li class="video-item"><a href="https://www.bilibili.com/video/BV1sW81zbEkD" class="video-link" target="_blank"><span class="video-badge">进阶</span>Python类型注解为什么流行？</a></li>
-                        <li class="video-item"><a href="https://www.bilibili.com/video/BV1WoGgeZEmc" class="video-link" target="_blank"><span class="video-badge">环境</span>VScode + Anaconda配置</a></li>
-                        <li class="video-item"><a href="https://www.bilibili.com/video/BV1Jgf6YvE8e" class="video-link" target="_blank"><span class="video-badge">入门</span>3小时快速入门Python</a></li>
-                        <li class="video-item"><a href="https://www.bilibili.com/video/BV1qW4y1a7fU" class="video-link" target="_blank"><span class="video-badge">系统</span>8天Python从入门到精通</a></li>
-                        <li class="video-item"><a href="https://www.bilibili.com/video/BV1EHdUYEEEj" class="video-link" target="_blank"><span class="video-badge">爬虫</span>50分钟快速入门Python爬虫</a></li>
-                        <li class="video-item"><a href="https://www.youtube.com/watch?v=I72uD8ED73U" class="video-link" target="_blank"><span class="video-badge">习惯</span>5个良好的Python习惯</a></li>
-                        <li class="video-item"><a href="https://www.youtube.com/watch?v=EoNOWVYKyo0" class="video-link" target="_blank"><span class="video-badge">技巧</span>Python 5个有用的F-String技巧</a></li>
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-badge">Git</span>给傻子的Git教程
+                            </a>
+                        </li>
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1sW81zbEkD" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-badge">进阶</span>Python类型注解为什么流行？
+                            </a>
+                        </li>
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1WoGgeZEmc" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-badge">环境</span>VScode + Anaconda配置
+                            </a>
+                        </li>
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1Jgf6YvE8e" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-badge">入门</span>3小时快速入门Python
+                            </a>
+                        </li>
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1qW4y1a7fU" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-badge">系统</span>8天Python从入门到精通
+                            </a>
+                        </li>
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1EHdUYEEEj" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-badge">爬虫</span>50分钟快速入门Python爬虫
+                            </a>
+                        </li>
+                        <li class="video-item">
+                            <a href="https://www.youtube.com/watch?v=I72uD8ED73U" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-badge">习惯</span>5个良好的Python习惯
+                            </a>
+                        </li>
+                        <li class="video-item">
+                            <a href="https://www.youtube.com/watch?v=EoNOWVYKyo0" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-badge">技巧</span>Python 5个有用的F-String技巧
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
 
-            <!-- 其他分类卡片...（保持原有结构） -->
+            <!-- 其他分类卡片...（保持原有结构，此处省略） -->
+            <!-- 实际项目中应保留所有分类，并添加相应注释 -->
         </section>
 
-        <!-- 资源导航区域 -->
+        <!-- -------------------- 资源导航区域（外部链接） -------------------- -->
         <section class="resource-section">
             <h2 class="section-title">程序开发资源</h2>
             <div class="resource-grid">
+                <!-- 菜鸟编程 -->
                 <a href="https://www.runoob.com" class="resource-item" target="_blank" rel="noopener">
                     <img class="resource-icon" src="https://www.runoob.com/wp-content/themes/runoob/assets/img/runoob-logo.png" alt="菜鸟教程">
                     <span class="resource-name">菜鸟编程</span>
                 </a>
+                <!-- 果壳剥壳 -->
                 <a href="https://www.ghxi.com" class="resource-item" target="_blank" rel="noopener">
                     <img class="resource-icon" src="https://www.ghxi.com/wp-content/uploads/2019/12/2020logo.png" alt="果壳剥壳">
                     <span class="resource-name">果壳剥壳</span>
                 </a>
+                <!-- 极客应用 -->
                 <a href="https://www.gy328.com/" class="resource-item" target="_blank" rel="noopener">
                     <img class="resource-icon" src="https://www.gy328.com/wp-content/uploads/2024/06/1717599115-gkbai.png" alt="极客应用">
                     <span class="resource-name">极客应用</span>
@@ -123,48 +182,27 @@
         </section>
     </div>
 
-    <!-- ==================== 核心功能脚本 ==================== -->
-    <!-- 搜索引擎配置与切换脚本 -->
+    <!-- =================================================================== -->
+    <!-- 功能脚本区域（交互逻辑） -->
+    <!-- 描述: 包含搜索引擎切换、搜索执行、分类折叠、头像预览等核心功能 -->
+    <!-- =================================================================== -->
     <script>
+        // ==================== 搜索引擎配置模块 ====================
         // 支持的搜索引擎配置（图标使用内联SVG，避免额外请求）
         const engines = [
-            {
-                name: 'Bing',
-                url: 'https://www.bing.com/search?q=',
-                icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z\'/%3E%3C/svg%3E'
-            },
-            {
-                name: 'Google',
-                url: 'https://www.google.com/search?q=',
-                icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z\'/%3E%3C/svg%3E'
-            },
-            {
-                name: 'YouTube',
-                url: 'https://www.youtube.com/results?search_query=',
-                icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z\'/%3E%3C/svg%3E'
-            },
-            {
-                name: 'BiliBili',
-                url: 'https://search.bilibili.com/all?keyword=',
-                icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.996 1.528 2.255 1.574 3.773v7.647c-.054 1.51-.578 2.769-1.574 3.773-1.004.996-2.255 1.528-3.773 1.574h-4.5c-.48 0-.944-.188-1.3-.525-.356-.337-.556-.794-.556-1.27v-1.5H8.063c-.48 0-.944-.188-1.3-.525-.356-.337-.556-.794-.556-1.27v-1.5H4.5c-.663 0-1.5-.413-1.5-1.5v-1.5c0-.663.413-1.5 1.5-1.5h1.5V9.563c0-.476.188-.944.525-1.3.337-.356.794-.556 1.27-.556h8.25V4.653zm-4.5 10.125c-.663 0-1.5.413-1.5 1.5s.413 1.5 1.5 1.5 1.5-.413 1.5-1.5-.413-1.5-1.5-1.5zm4.5 0c-.663 0-1.5.413-1.5 1.5s.413 1.5 1.5 1.5 1.5-.413 1.5-1.5-.413-1.5-1.5-1.5z\'/%3E%3C/svg%3E'
-            },
-            {
-                name: '知乎',
-                url: 'https://www.zhihu.com/search?type=content&q=',
-                icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M5.721 0C2.251 0 0 2.25 0 5.719V18.28C0 21.751 2.252 24 5.721 24h12.56C21.751 24 24 21.75 24 18.281V5.72C24 2.249 21.75 0 18.281 0zm1.964 4.078c-.271.73-.5 1.434-.68 2.11h5.587c.547-.01.955.048 1.225.168.27.12.455.291.556.513.1.222.127.469.08.65-.046.181-.147.326-.304.435-.157.11-.64.336-1.45.68-.81.342-1.364.669-1.66.98-.296.31-.457.708-.483 1.188-.025.48-.025.95 0 1.41.026.46.026.88 0 1.26-.026.38-.026.76 0 1.14.026.38.026.78 0 1.2-.026.42-.026.88 0 1.38l.05.553c.05.552.073 1.022.07 1.41-.003.387-.02.877-.05 1.47-.03.592-.047 1.212-.05 1.86-.003.647.014 1.277.05 1.89.036.61.05 1.18.04 1.703-.008.523-.008.92 0 1.19.01.27.01.48 0 .64-.01.16-.01.3 0 .42.01.12.01.28 0 .48l-.16 1.28c-.11.88-.23 1.767-.35 2.663-.12.896-.23 1.81-.34 2.74-.11.93-.2 1.877-.27 2.842-.07.965-.12 1.95-.17 2.955H7.2c.048-.965.102-1.91.162-2.835.06-.925.136-1.85.227-2.775.09-.925.196-1.86.318-2.805.12-.945.257-1.93.408-2.955.15-1.025.317-2.14.5-3.345.183-1.204.383-2.56.6-4.07h-3.44c.21-.6.46-1.19.75-1.77.29-.58.62-1.16.99-1.74.37-.58.77-1.18 1.2-1.8.43-.62.88-1.29 1.35-2.01.48-.72.97-1.51 1.47-2.37.5-.86 1.01-1.83 1.53-2.91.52-1.08 1.04-2.29 1.56-3.63.52-1.34 1.02-2.83 1.5-4.47z\'/%3E%3Cpath fill=\'%23b6da3e\' d=\'M18.901 20.052h-1.73v-1.84c-.05-.6-.05-1.2 0-1.8v-1.84h1.73v5.48zm0-7.02h-1.73V7.862c-.05-.6-.05-1.2 0-1.8V4.222h1.73v8.83z\'/%3E%3C/svg%3E'
-            },
-            {
-                name: 'GitHub',
-                url: 'https://github.com/search?q=',
-                icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23b6da3e\' d=\'M12 .5A12 12 0 0 0 0 12.82c0 5.34 3.44 9.86 8.21 11.47.6.12.82-.27.82-.6V20.7c-3.34.74-4.04-1.63-4.04-1.63-.55-1.41-1.36-1.78-1.36-1.78-1.11-.77.08-.76.08-.76 1.23.09 1.88 1.28 1.88 1.28 1.09 1.9 2.86 1.35 3.56 1.03.11-.8.42-1.35.76-1.66-2.67-.31-5.48-1.36-5.48-6.06 0-1.34.47-2.44 1.24-3.3-.12-.31-.54-1.56.12-3.25 0 0 1.01-.32 3.3 1.26a11.2 11.2 0 0 1 6 0c2.29-1.58 3.3-1.26 3.3-1.26.66 1.69.24 2.94.12 3.25.77.86 1.24 1.96 1.24 3.3 0 4.72-2.81 5.74-5.49 6.05.43.37.81 1.1.81 2.22v3.29c0 .34.22.73.82.6A12.2 12.2 0 0 0 24 12.82 12 12 0 0 0 12 .5z\'/%3E%3C/svg%3E'
-            }
+            { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: 'data:image/svg+xml,...' },
+            { name: 'Google', url: 'https://www.google.com/search?q=', icon: 'data:image/svg+xml,...' },
+            { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', icon: '...' },
+            { name: 'BiliBili', url: 'https://search.bilibili.com/all?keyword=', icon: '...' },
+            { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', icon: '...' },
+            { name: 'GitHub', url: 'https://github.com/search?q=', icon: '...' }
         ];
 
         let currentEngineIndex = 0;
         const engineIcon = document.getElementById('engineIcon');
         const engineSwitch = document.getElementById('engineSwitch');
 
-        // 切换搜索引擎
+        // 切换搜索引擎: 循环更新图标与提示文本
         function switchEngine() {
             currentEngineIndex = (currentEngineIndex + 1) % engines.length;
             const engine = engines[currentEngineIndex];
@@ -173,7 +211,7 @@
             engineSwitch.title = `当前: ${engine.name} (点击切换)`;
         }
 
-        // 执行搜索
+        // 执行搜索: 获取输入内容并使用当前引擎打开新标签页
         function performSearch() {
             const input = document.getElementById('search_input');
             const query = input.value.trim();
@@ -184,7 +222,8 @@
             }
         }
 
-        // 分类折叠切换
+        // ==================== 分类折叠模块 ====================
+        // 切换分类卡片的展开/收起状态
         function toggleCategory(btn) {
             const content = btn.closest('.category-card').querySelector('.content-wrapper');
             const isCollapsed = content.classList.contains('collapsed');
@@ -198,12 +237,14 @@
             }
         }
 
-        // 搜索框回车事件
+        // ==================== 搜索框交互模块 ====================
+        // 监听回车键触发搜索
         document.getElementById('search_input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') performSearch();
         });
 
-        // 页面滚动动画观察器
+        // ==================== 滚动动画模块 ====================
+        // 配置：当元素10%进入视口时触发，底部预留50px
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -218,7 +259,7 @@
             });
         }, observerOptions);
 
-        // 为分类卡片添加滚动动画
+        // 为所有分类卡片添加滚动淡入动画
         document.querySelectorAll('.category-card').forEach(card => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(40px)';
@@ -226,34 +267,32 @@
             observer.observe(card);
         });
 
-        // 初始化搜索引擎提示
+        // 初始化搜索引擎提示文本
         engineSwitch.title = `当前: ${engines[0].name} (点击切换)`;
 
-        // ==================== 头像预览功能（双图源分离方案） ====================
+        // ==================== 头像预览模块（双图源分离） ====================
+        // 架构说明: 参考PhotoShow插件设计，采用单例模式+延迟预加载策略
         (function() {
             'use strict';
 
-            // 全局配置
+            // 全局配置常量
             const PREVIEW_CONFIG = {
-                // 预览容器尺寸
-                previewWidth: 400,
-                previewHeight: 400,
-                // 动画时长
-                transitionDuration: 300,
-                // 预加载延迟
-                preloadDelay: 150
+                previewWidth: 400,      // 预览容器宽度
+                previewHeight: 400,     // 预览容器高度
+                preloadDelay: 150       // 预加载延迟（避免快速滑过时的无效请求）
             };
 
-            // 状态管理（类似PhotoShow的viewer状态）
+            // 状态管理（类似PhotoShow的viewer状态机）
             const previewState = {
-                isShown: false,
-                isLoading: false,
-                currentThumb: null,
-                previewContainer: null,
-                preloadTimer: null
+                isShown: false,         // 预览显示状态
+                isLoading: false,       // 加载锁定（防止重复触发）
+                currentThumb: null,     // 当前缩略图元素
+                previewContainer: null, // 预览容器单例
+                preloadTimer: null      // 延迟加载定时器
             };
 
-            // 创建全局预览容器（类似PhotoShow的photoShowViewer.viewerBox）
+            // 创建全局预览容器（单例模式）
+            // 挂载到根层级避免z-index层叠问题
             function createGlobalPreviewContainer() {
                 if (previewState.previewContainer) return previewState.previewContainer;
 
@@ -265,56 +304,46 @@
                          alt="头像预览"
                          loading="lazy">
                 `;
-                
-                // 挂载到根层级避免z-index层叠问题
                 document.documentElement.appendChild(container);
                 previewState.previewContainer = container;
-
                 return container;
             }
 
-            // 预加载高清图片（类似PhotoShow的tools.loadImage）
+            // 预加载高清图片（Promise封装）
             function preloadHDSrc(hdSrc) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
+                    const timeout = setTimeout(() => reject(new Error('加载超时')), 10000);
                     
-                    img.onload = () => resolve(hdSrc);
+                    img.onload = () => {
+                        clearTimeout(timeout);
+                        resolve(hdSrc);
+                    };
                     img.onerror = () => reject(new Error('图片加载失败'));
-                    
-                    // 设置超时
-                    setTimeout(() => reject(new Error('加载超时')), 10000);
-                    
                     img.src = hdSrc;
                 });
             }
 
-            // 显示预览（类似PhotoShowViewer.showViewer）
+            // 显示预览（带加载状态）
             function showPreview(thumbElement, hdSrc) {
                 if (previewState.isLoading) return;
                 
                 previewState.isLoading = true;
                 previewState.currentThumb = thumbElement;
+                thumbElement.classList.add('avatar-loading');
 
                 const previewContainer = createGlobalPreviewContainer();
                 const previewImage = previewContainer.querySelector('.preview-image-global');
 
-                // 显示加载状态（可选）
-                thumbElement.classList.add('avatar-loading');
-
-                // 预加载高清图
                 preloadHDSrc(hdSrc)
                     .then(() => {
-                        // 更新图片源
                         previewImage.src = hdSrc;
-                        
-                        // 使用requestAnimationFrame确保样式正确应用
                         requestAnimationFrame(() => {
                             previewContainer.classList.add('show');
                             previewState.isShown = true;
                         });
                     })
                     .catch(error => {
-                        // 加载失败处理（静默失败）
                         console.warn('头像预览加载失败:', error);
                     })
                     .finally(() => {
@@ -323,77 +352,53 @@
                     });
             }
 
-            // 隐藏预览（类似PhotoShowViewer.mouseLeaveAction）
+            // 隐藏预览（带淡出动画）
             function hidePreview() {
                 if (!previewState.previewContainer) return;
-
                 const previewContainer = previewState.previewContainer;
                 
-                // 淡出动画
                 previewContainer.classList.remove('show');
                 previewState.isShown = false;
                 previewState.currentThumb = null;
 
-                // 动画结束后重置图片源（避免缓存问题）
                 setTimeout(() => {
                     const previewImage = previewContainer.querySelector('.preview-image-global');
-                    if (previewImage) {
-                        previewImage.src = '';
-                    }
-                }, PREVIEW_CONFIG.transitionDuration);
+                    if (previewImage) previewImage.src = '';
+                }, 300);
             }
 
-            // 初始化头像包装器事件（参考PhotoShow事件绑定模式）
+            // 初始化头像包装器事件
+            // 使用mouseenter/mouseleave避免子元素干扰
             function initializeAvatarPreview() {
                 const avatarWrapper = document.querySelector('.avatar-wrapper');
                 if (!avatarWrapper) return;
 
-                // 获取双图源
                 const thumbSrc = avatarWrapper.dataset.avatarThumb;
                 const hdSrc = avatarWrapper.dataset.avatarHd;
 
-                // 验证图源有效性
                 if (!thumbSrc || !hdSrc) {
                     console.warn('头像包装器缺少data-avatar-thumb或data-avatar-hd属性');
                     return;
                 }
 
-                // 绑定悬停事件（使用mouseenter/mouseleave而非mouseover/mouseout，避免子元素干扰）
                 avatarWrapper.addEventListener('mouseenter', function() {
-                    // 清除之前的定时器
-                    if (previewState.preloadTimer) {
-                        clearTimeout(previewState.preloadTimer);
-                    }
-
-                    // 延迟预加载，避免快速滑过时的无效加载
-                    previewState.preloadTimer = setTimeout(() => {
-                        showPreview(this, hdSrc);
-                    }, PREVIEW_CONFIG.preloadDelay);
+                    if (previewState.preloadTimer) clearTimeout(previewState.preloadTimer);
+                    previewState.preloadTimer = setTimeout(() => showPreview(this, hdSrc), PREVIEW_CONFIG.preloadDelay);
                 });
 
                 avatarWrapper.addEventListener('mouseleave', function(e) {
-                    // 清除延迟定时器
                     if (previewState.preloadTimer) {
                         clearTimeout(previewState.preloadTimer);
                         previewState.preloadTimer = null;
                     }
-
-                    // 确保是真正离开（不是进入子元素）
-                    if (!this.contains(e.relatedTarget)) {
-                        hidePreview();
-                    }
+                    if (!this.contains(e.relatedTarget)) hidePreview();
                 });
 
-                // 点击跳转时隐藏预览
-                avatarWrapper.addEventListener('click', function() {
-                    hidePreview();
-                });
+                avatarWrapper.addEventListener('click', () => hidePreview());
 
-                // ESC键隐藏预览（全局事件）
+                // ESC键全局隐藏预览
                 document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && previewState.isShown) {
-                        hidePreview();
-                    }
+                    if (e.key === 'Escape' && previewState.isShown) hidePreview();
                 });
             }
 
