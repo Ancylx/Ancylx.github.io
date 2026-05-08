@@ -1,0 +1,203 @@
+<!--
+ * 星云日志 - 学习笔记页面
+ * 依赖：shared.css（全局样式表）
+ * 版本：v1.0.0
+ * 说明：Markdown、LaTeX 等技术学习心得，以分类卡片呈现
+-->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    <title>学习笔记 - 星云日志</title>
+    <link rel="stylesheet" href="/shared.css">
+</head>
+
+<body>
+
+    <div class="decor-lines">
+        <div class="line-tl"></div>
+        <div class="line-br"></div>
+    </div>
+
+    <div class="main-container">
+        <a href="/index.html" class="back-link">← 返回首页</a>
+
+        <header class="header">
+            <h1 class="main-title">学习笔记</h1>
+            <p class="subtitle">Markdown · LaTeX · 技术心得</p>
+        </header>
+
+        <!-- ==================== Markdown 笔记 ==================== -->
+        <section class="category-grid">
+
+            <div class="category-card">
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon">📒</div>
+                        <h2 class="card-title">Markdown</h2>
+                    </div>
+                    <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起内容">
+                        <svg class="toggle-icon" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="content-wrapper collapsed" data-max-height="180">
+                    <ul class="video-list">
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1bK4y1i7BY" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-title">40分钟教会你用VSCode做出好看的笔记</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">Markdown</span>
+                                    <span class="video-badge">笔记</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="video-item">
+                            <a href="https://www.youtube.com/watch?v=_PPWWRV6gbA" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-title">The Only Markdown Crash Course You Will Ever Need</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">Markdown</span>
+                                    <span class="video-badge">速成</span>
+                                    <span class="video-badge">英文</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ==================== LaTeX 笔记 ==================== -->
+            <div class="category-card">
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon">📐</div>
+                        <h2 class="card-title">LaTeX</h2>
+                    </div>
+                    <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起内容">
+                        <svg class="toggle-icon" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="content-wrapper collapsed" data-max-height="140">
+                    <ul class="video-list">
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1Yq66Y3EFq" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-title">LaTeX环境部署与简单入门</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">LaTeX</span>
+                                    <span class="video-badge">环境</span>
+                                    <span class="video-badge">入门</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ==================== Git 笔记 ==================== -->
+            <div class="category-card">
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon">🔀</div>
+                        <h2 class="card-title">Git & 版本控制</h2>
+                    </div>
+                    <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起内容">
+                        <svg class="toggle-icon" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="content-wrapper collapsed" data-max-height="140">
+                    <ul class="video-list">
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-title">给傻子的Git教程</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">Git</span>
+                                    <span class="video-badge">教程</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ==================== 博客搭建 ==================== -->
+            <div class="category-card">
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon">🌐</div>
+                        <h2 class="card-title">博客搭建</h2>
+                    </div>
+                    <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起内容">
+                        <svg class="toggle-icon" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="content-wrapper collapsed" data-max-height="140">
+                    <ul class="video-list">
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1AT411h7RX" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-title">个人网站搭建完整指南，从小白到站长</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">博客</span>
+                                    <span class="video-badge">搭建</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="video-item">
+                            <a href="https://www.bilibili.com/video/BV1ac411B7Li" class="video-link" target="_blank" rel="noopener">
+                                <span class="video-title">超详细！个人博客搭建教程，低成本零代码</span>
+                                <div class="video-badges">
+                                    <span class="video-badge">WordPress</span>
+                                    <span class="video-badge">搭建</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <script>
+        function toggleCategory(btn) {
+            const content = btn.closest('.category-card').querySelector('.content-wrapper');
+            const isCollapsed = content.classList.contains('collapsed');
+            if (isCollapsed) {
+                content.classList.remove('collapsed');
+                btn.classList.remove('collapsed');
+            } else {
+                content.classList.add('collapsed');
+                btn.classList.add('collapsed');
+            }
+        }
+
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.category-card').forEach(function (card) {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(40px)';
+            card.style.transition = 'opacity 0.6s var(--trans-smooth), transform 0.6s var(--trans-smooth)';
+            observer.observe(card);
+        });
+    </script>
+
+</body>
+
+</html>

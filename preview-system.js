@@ -171,7 +171,7 @@ function initializePreview(selector) {
 
         // 使用mouseenter/mouseleave避免子元素干扰
         element.addEventListener('mouseenter', function() {
-            if (previewState.preloadDelay) {
+            if (previewState.preloadTimer) {
                 clearTimeout(previewState.preloadTimer);
             }
             previewState.preloadTimer = setTimeout(

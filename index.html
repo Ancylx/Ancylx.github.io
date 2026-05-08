@@ -2,9 +2,18 @@
  * 星云日志 - 主入口页面
  * 部署地址：https://ancylx.github.io
  * 功能：技术导航、资源聚合、个人主页展示、多引擎搜索、内容预览
- * 依赖：shared.css（全局样式表，v1.2.3）、preview-system.js（预览系统，v1.0.0）
- * 版本：v1.2.3
+ * 依赖：shared.css（全局样式表，v1.3.0）、preview-system.js（预览系统，v1.0.1）
+ * 版本：v1.3.0
  * 更新日志：
+ *   v1.3.0 (2026-05-08):
+ *     - refactor: 重构首页布局，按策划报告增加Logo/Banner/栏目导航卡片/页脚
+ *     - feat: 添加内联SVG星云Logo
+ *     - feat: 添加Banner宣传语区域（纯CSS实现）
+ *     - feat: 添加6个栏目导航卡片（程序开发/人工智能/视觉设计/工具资源/学习笔记/关于我）
+ *     - fix: 修复AI智能体区域重复Kimi条目及ChatGPT标签错误
+ *     - fix: 修复残损URL（hhttps://, ttps://）
+ *     - refactor: 移除首页内嵌技术分类内容卡片，改为导航至子页面
+ *     - feat: 添加页脚版权信息
  *   v1.2.3 (2025-01-14):
  *     - fix: 移除技术分类导航中视频项的封面预览功能（B站反爬导致无法正常显示）
  *   v1.2.2 (2025-01-14):
@@ -12,20 +21,16 @@
  *     - feat: 增大资源图标显示尺寸至36px
  *   v1.2.1 (2025-01-14):
  *     - feat: 资源导航区域Logo图标右对齐，标题左对齐
- *     - feat: 资源图标支持默认图片回退机制（阿卡林.png）
+ *     - feat: 资源图标支持默认图片回退机制
  *   v1.2.0 (2025-01-14):
  *     - feat: 重构video-link布局结构，支持多标签右对齐排列
  *     - refactor: 将video-badge从行内元素改为独立容器布局，提升视觉对齐一致性
  *   v1.1.0 (2025-01-14):
  *     - feat: 集成通用悬停预览系统，支持多元素类型
- *     - feat: 视频项添加data-preview-src属性，支持封面预览
- *     - refactor: 提取预览逻辑为独立模块，提升可维护性
  *   v1.0.0 (2025-01-14):
  *     - feat: 实现双图源头像预览功能（thumb/hd分离）
- *     - feat: 添加搜索引擎切换功能（支持6个引擎）
+ *     - feat: 添加搜索引擎切换功能
  *     - feat: 实现分类卡片折叠展开与滚动动画
- *     - refactor: 移除内联样式，全面采用CSS变量系统
- *     - style: 规范化注释结构，符合项目注释规范
 -->
 
 <!DOCTYPE html>
@@ -36,7 +41,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
     <meta name="description" content="星云日志 - 学习笔记 · 技术导航 · 资源聚合">
     <title>星云日志</title>
-    <!-- 集中管理的全局样式文件 -->
     <link rel="stylesheet" href="/shared.css">
 </head>
 
@@ -44,26 +48,56 @@
 
     <!-- ==================== 主容器（布局根节点） ==================== -->
     <div class="main-container">
-        <!-- -------------------- 标题区域（品牌展示） -------------------- -->
+
+        <!-- -------------------- Logo 区域（品牌展示） -------------------- -->
+        <!-- 设计说明：六角星轨图案 + 文字，内联SVG绘制，线条延伸出三对对称星芒 -->
         <header class="header">
-            <h1 class="main-title">Nebula Logs</h1>
+            <div class="logo-container">
+                <svg class="logo-svg" viewBox="0 0 80 80" width="72" height="72" aria-label="星云日志Logo">
+                    <!-- 星芒线条：三对对称射线，从中心向外延伸 -->
+                    <!-- 水平方向 -->
+                    <line x1="40" y1="40" x2="12" y2="40" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="40" y1="40" x2="68" y2="40" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- 60° 方向 -->
+                    <line x1="40" y1="40" x2="26" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="40" y1="40" x2="54" y2="64" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- 120° 方向 -->
+                    <line x1="40" y1="40" x2="26" y2="64" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="40" y1="40" x2="54" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- 六角星主体 -->
+                    <polygon points="40,10 47,28 67,28 52,40 58,58 40,48 22,58 28,40 13,28 33,28"
+                        fill="currentColor" opacity="0.85"/>
+                    <!-- 中心光点 -->
+                    <circle cx="40" cy="40" r="6" fill="currentColor"/>
+                    <!-- 外环星轨 -->
+                    <circle cx="40" cy="40" r="30" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"
+                        stroke-dasharray="8 12"/>
+                    <circle cx="40" cy="40" r="22" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.35"
+                        stroke-dasharray="4 16"/>
+                </svg>
+                <h1 class="main-title">Nebula Logs</h1>
+            </div>
             <p class="subtitle">学习笔记 · 技术导航 · 资源聚合</p>
         </header>
+
+        <!-- -------------------- Banner 宣传区域（纯CSS实现） -------------------- -->
+        <!-- 设计说明：横向色带，星空渐变底叠加微星点，无图片元素 -->
+        <section class="banner">
+            <p class="banner-tagline">学习笔记 · 技术导航 · 资源聚合</p>
+            <p class="banner-subtitle">在代码的星海中，点亮属于你的那颗星</p>
+        </section>
 
         <!-- -------------------- 搜索区域（多引擎切换） -------------------- -->
         <section class="search-section">
             <div class="search-wrapper">
                 <div class="search-box">
-                    <!-- 搜索引擎切换按钮 -->
                     <button class="engine-switch" id="engineSwitch" title="切换搜索引擎" onclick="switchEngine()">
                         <img class="engine-icon" id="engineIcon"
                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23b6da3e' d='M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z'/%3E%3C/svg%3E"
                             alt="搜索引擎图标">
                     </button>
-                    <!-- 搜索输入框 -->
                     <input id="search_input" class="search-input" type="text" placeholder="搜索技术内容..."
                         autocomplete="off">
-                    <!-- 搜索执行按钮 -->
                     <button class="search-btn" onclick="performSearch()" title="搜索">
                         <div class="search-icon"></div>
                     </button>
@@ -71,33 +105,94 @@
             </div>
         </section>
 
+        <!-- -------------------- 栏目导航区域（六大分类入口） -------------------- -->
+        <!-- 设计说明：CSS Grid 2行3列，每卡片含自定义SVG图标+标题+描述，悬停上浮+边框光效 -->
+        <section class="nav-grid">
+            <!-- 程序开发 -->
+            <a href="pages/programming/programmingmainpage.html" class="nav-card">
+                <svg class="nav-card-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+                    <path d="M10 6 L6 16 L10 26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 6 L26 16 L22 26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="12" y1="5" x2="20" y2="27" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h2 class="nav-card-title">程序开发</h2>
+                <p class="nav-card-desc">编程语言、开发工具与教程资源</p>
+            </a>
+            <!-- 人工智能 -->
+            <a href="pages/aigc/aigcmainpage.html" class="nav-card">
+                <svg class="nav-card-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+                    <rect x="7" y="7" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <line x1="12" y1="13" x2="20" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="12" y1="17" x2="20" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="12" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="16" cy="10" r="2" fill="currentColor"/>
+                </svg>
+                <h2 class="nav-card-title">人工智能</h2>
+                <p class="nav-card-desc">大模型、开源AI项目与教程</p>
+            </a>
+            <!-- 视觉设计 -->
+            <a href="pages/design/designmainpage.html" class="nav-card">
+                <svg class="nav-card-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+                    <circle cx="11" cy="11" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="11" cy="11" r="2" fill="currentColor"/>
+                    <line x1="15" y1="15" x2="28" y2="28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <rect x="20" y="14" width="10" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(45 25 16.5)"/>
+                </svg>
+                <h2 class="nav-card-title">视觉设计</h2>
+                <p class="nav-card-desc">设计工具、图像处理与创意资源</p>
+            </a>
+            <!-- 工具资源 -->
+            <a href="pages/tools/tools.html" class="nav-card">
+                <svg class="nav-card-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+                    <circle cx="16" cy="16" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="16" cy="16" r="2" fill="currentColor"/>
+                    <path d="M16 6 L16 2 M16 26 L16 30 M6 16 L2 16 M26 16 L30 16"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M9 9 L6 6 M23 23 L26 26 M23 9 L26 6 M9 23 L6 26"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h2 class="nav-card-title">工具资源</h2>
+                <p class="nav-card-desc">在线工具、实用站点与效率利器</p>
+            </a>
+            <!-- 学习笔记 -->
+            <a href="pages/notes/notes.html" class="nav-card">
+                <svg class="nav-card-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+                    <path d="M4 6 L4 26 L20 26 L20 22 L28 22 L28 6 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M20 26 L20 22 L28 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <line x1="9" y1="11" x2="19" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="9" y1="15" x2="19" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="9" y1="19" x2="15" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <h2 class="nav-card-title">学习笔记</h2>
+                <p class="nav-card-desc">Markdown、LaTeX等学习心得</p>
+            </a>
+            <!-- 关于我 -->
+            <a href="pages/web/self.html" class="nav-card">
+                <svg class="nav-card-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+                    <circle cx="16" cy="10" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <path d="M6 28 C6 22 10 18 16 18 C22 18 26 22 26 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h2 class="nav-card-title">关于我</h2>
+                <p class="nav-card-desc">个人简介、技能树与联系方式</p>
+            </a>
+        </section>
+
         <!-- -------------------- 个人主页导航区域（双图源预览） -------------------- -->
         <section class="profile-container">
-            <!-- 左侧：GitHub大头像（带全局悬停预览） -->
             <div class="profile-main">
-                <!-- 
-                    头像包装器：承载预览触发功能
-                    - data-preview-src: 高清预览图URL（悬停时加载显示）
-                    - 技术架构：复用preview-system.js通用模块
-                -->
                 <a href="https://github.com/Ancylx/Ancylx.github.io" target="_blank" rel="noopener"
                     class="avatar-wrapper preview-trigger" title="查看GitHub项目"
                     data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/profile-avatar/yingchun-00000-1024.png">
-                    <!-- 缩略图：GitHub头像（页面初始显示） -->
                     <img class="profile-avatar-large" src="https://avatars.githubusercontent.com/u/183050286"
                         alt="个人头像">
                 </a>
             </div>
-
-            <!-- 右侧：主页链接按钮列表 -->
             <div class="profile-links">
-                <!-- GitHub主页链接 -->
                 <a href="https://github.com/Ancylx" class="profile-button" target="_blank" rel="noopener">
                     <span class="button-icon">🐙</span>
                     <span class="button-text">GitHub 主页</span>
                     <span class="button-arrow">→</span>
                 </a>
-                <!-- Bilibili主页链接 -->
                 <a href="https://space.bilibili.com/353809194" class="profile-button" target="_blank" rel="noopener">
                     <span class="button-icon">📺</span>
                     <span class="button-text">Bilibili 主页</span>
@@ -106,294 +201,10 @@
             </div>
         </section>
 
-        <!-- -------------------- 技术分类导航（可折叠卡片） -------------------- -->
-        <section class="category-grid">
-            <!-- ==================== Python分类 ==================== -->
-            <div class="category-card">
-                <div class="card-header">
-                    <div class="card-title-group">
-                        <div class="card-icon">🐍</div>
-                        <h2 class="card-title">Python</h2>
-                    </div>
-                    <!-- 折叠切换按钮 -->
-                    <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起内容">
-                        <svg class="toggle-icon" viewBox="0 0 24 24">
-                            <path d="M7 10l5 5 5-5z" />
-                        </svg>
-                    </button>
-                </div>
-                <!-- 可折叠内容区域 -->
-                <div class="content-wrapper collapsed" data-max-height="200">
-                    <ul class="video-list">
-                        <!-- 
-                            视频项结构说明：
-                            - video-link采用flex双向布局，video-title左对齐，video-badges右对齐且标签从右向左排列
-                            - 注：视频封面预览功能已在v1.2.3中移除
-                        -->
-                        <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">给傻子的Git教程</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">Git</span>
-                                    <span class="video-badge">教程</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1sW81zbEkD" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">Python类型注解为什么流行？</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">进阶</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1WoGgeZEmc" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">VScode + Anaconda配置</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">环境</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1Jgf6YvE8e" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">3小时快速入门Python</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">入门</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1qW4y1a7fU" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">8天Python从入门到精通</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">系统</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1EHdUYEEEj" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">50分钟快速入门Python爬虫</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">爬虫</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="video-item">
-                            <a href="https://www.youtube.com/watch?v=I72uD8ED73U" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">5个良好的Python习惯</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">习惯</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="video-item">
-                            <a href="https://www.youtube.com/watch?v=EoNOWVYKyo0" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">Python 5个有用的F-String技巧</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">技巧</span>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- ==================== Markdown/LaTeX分类 ==================== -->
-            <div class="category-card">
-                <div class="card-header">
-                    <div class="card-title-group">
-                        <div class="card-icon">📒</div>
-                        <h2 class="card-title">Markdown/LaTeX</h2>
-                    </div>
-                    <!-- 折叠切换按钮 -->
-                    <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起内容">
-                        <svg class="toggle-icon" viewBox="0 0 24 24">
-                            <path d="M7 10l5 5 5-5z" />
-                        </svg>
-                    </button>
-                </div>
-                <!-- 可折叠内容区域 -->
-                <div class="content-wrapper collapsed" data-max-height="200">
-                    <ul class="video-list">
-                        <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1bK4y1i7BY" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">40分钟教会你用免费的vscode做出好看的笔记</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">Markdown</span>
-                                    <span class="video-badge">笔记</span>
-                                </div>
-                            </a>
-                            <a href="https://www.youtube.com/watch?v=_PPWWRV6gbA&t=60s" class="video-link"
-                                target="_blank" rel="noopener">
-                                <span class="video-title">The Only Markdown Crash Course You Will Ever Need</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">Markdown</span>
-                                    <span class="video-badge">速成</span>
-                                    <span class="video-badge">油管英文</span>
-                                </div>
-                            </a>
-                            <a href="hhttps://www.bilibili.com/video/BV1Yq66Y3EF" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">LaTex环境部署与简单入门</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">LaTeX</span>
-                                    <span class="video-badge">环境部署</span>
-                                    <span class="video-badge">入门</span>
-                                </div>
-                            </a>
-                    </ul>
-                </div>
-            </div>
-            <!-- ==================== HTML/CSS/JavaScript分类 ==================== -->
-            <div class="category-card">
-                <div class="card-header">
-                    <div class="card-title-group">
-                        <div class="card-icon">🔗</div>
-                        <h2 class="card-title">HTML/CSS/JavaScript</h2>
-                    </div>
-                    <!-- 折叠切换按钮 -->
-                    <button class="toggle-btn collapsed" onclick="toggleCategory(this)" title="展开/收起内容">
-                        <svg class="toggle-icon" viewBox="0 0 24 24">
-                            <path d="M7 10l5 5 5-5z" />
-                        </svg>
-                    </button>
-                </div>
-                <!-- 可折叠内容区域 -->
-                <div class="content-wrapper collapsed" data-max-height="200">
-                    <ul class="video-list">
-                        <li class="video-item">
-                            <a href="ttps://www.bilibili.com/video/BV1vs411M7aT" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">为初学者准备的：HTML 速成</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">HTML</span>
-                                    <span class="video-badge">速成</span>
-                                </div>
-                            </a>
-                    </ul>
-                </div>
-                <div class="content-wrapper collapsed" data-max-height="200">
-                    <ul class="video-list">
-                        <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1Hkr7YYEh8" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">视频标题</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">标签1</span>
-                                </div>
-                            </a>
-                    </ul>
-                </div>
-                <div class="content-wrapper collapsed" data-max-height="200">
-                    <ul class="video-list">
-                        <li class="video-item">
-                            <a href="https://www.bilibili.com/video/BV1bW411R7hg" class="video-link" target="_blank"
-                                rel="noopener">
-                                <span class="video-title">为初学者准备的：CSS 速成</span>
-                                <div class="video-badges">
-                                    <span class="video-badge">CSS</span>
-                                    <span class="video-badge">速成</span>
-                                </div>
-                            </a>
-                    </ul>
-                    <div class="content-wrapper collapsed" data-max-height="200">
-                        <ul class="video-list">
-                            <li class="video-item">
-                                <a href="https://www.bilibili.com/video/BV1Jt411D7j6" class="video-link" target="_blank"
-                                    rel="noopener">
-                                    <span class="video-title">为为初学者准备的：JavaScript 速成</span>
-                                    <div class="video-badges">
-                                        <span class="video-badge">JavaScript</span>
-                                        <span class="video-badge">速成</span>
-                                    </div>
-                                </a>
-                        </ul>
-                    </div>
-                    <div class="content-wrapper collapsed" data-max-height="200">
-                        <ul class="video-list">
-                            <li class="video-item">
-                                <a href="https://www.bilibili.com/video/BV1AT411h7RX" class="video-link" target="_blank"
-                                    rel="noopener">
-                                    <span class="video-title">个人网站搭建完整指南，从小白到站长全部流程以及避坑</span>
-                                    <div class="video-badges">
-                                        <span class="video-badge">博客</span>
-                                        <span class="video-badge">搭建</span>
-                                    </div>
-                                </a>
-                        </ul>
-                    </div>
-                    <div class="content-wrapper collapsed" data-max-height="200">
-                        <ul class="video-list">
-                            <li class="video-item">
-                                <a href="https://www.bilibili.com/video/BV1ac411B7Li" class="video-link" target="_blank"
-                                    rel="noopener">
-                                    <span class="video-title">超详细！个人博客搭建教程，低成本，零代码，手把手，WordPress</span>
-                                    <div class="video-badges">
-                                        <span class="video-badge">博客</span>
-                                        <span class="video-badge">搭建</span>
-                                    </div>
-                                </a>
-                        </ul>
-                    </div>
-                </div>
-
-
-                <!-- 其他分类卡片...（实际项目中应保留所有分类，并添加相应注释） -->
-        </section>
-
         <!-- -------------------- 资源导航区域（外部链接） -------------------- -->
-        <!-- 
-            三级：资源网格组件
-            - 功能：展示外部资源链接，图标右对齐，标题左对齐
-            - 优化：v1.2.2调整网格为每行最多4项，图标尺寸增大至36px
-            - 布局：两端对齐，响应式网格，minmax(240px, 1fr)确保显示空间充足
-        -->
+        <!-- AI智能体 -->
         <section class="resource-section">
-            <h2 class="section-title">程序开发资源</h2>
-            <div class="resource-grid">
-                <!-- 
-                    四级：资源项结构
-                    - resource-name: 资源名称（左对齐，flex:1占据空间）
-                    - resource-icon: Logo图标（右对齐，36x36px，flex-shrink: 0防止压缩）
-                    - 回退机制：onerror触发handleResourceIconError函数
-                -->
-                <!-- 菜鸟编程 -->
-                <a href="https://www.runoob.com" class="resource-item" target="_blank" rel="noopener">
-                    <span class="resource-name">菜鸟编程</span>
-                    <img class="resource-icon"
-                        src="https://www.runoob.com/wp-content/themes/runoob/assets/img/runoob-logo.png" alt="菜鸟教程"
-                        data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
-                        onerror="handleResourceIconError(this)">
-                </a>
-                <!-- 果壳剥壳 -->
-                <a href="https://www.ghxi.com" class="resource-item" target="_blank" rel="noopener">
-                    <span class="resource-name">果壳剥壳</span>
-                    <img class="resource-icon" src="https://www.ghxi.com/wp-content/uploads/2019/12/2020logo.png"
-                        alt="果壳剥壳"
-                        data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
-                        onerror="handleResourceIconError(this)">
-                </a>
-                <!-- 极客应用 -->
-                <a href="https://www.gy328.com/" class="resource-item" target="_blank" rel="noopener">
-                    <span class="resource-name">极客应用</span>
-                    <img class="resource-icon"
-                        src="https://www.gy328.com/wp-content/uploads/2024/06/1717599115-gkbai.png" alt="极客应用"
-                        data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
-                        onerror="handleResourceIconError(this)">
-                </a>
-            </div>
-        </section>
-        <section class="resource-section">
-            <h2 class="section-title">AI智能体</h2>
+            <h2 class="section-title">AI 智能体</h2>
             <div class="resource-grid">
                 <a href="https://www.doubao.com/chat/" class="resource-item" target="_blank" rel="noopener">
                     <span class="resource-name">豆包</span>
@@ -408,198 +219,131 @@
                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
                         onerror="handleResourceIconError(this)">
                 </a>
-                <a href="https://www.kimi.com/" class="resource-item" target="_blank" rel="noopener">
+                <a href="https://kimi.moonshot.cn/" class="resource-item" target="_blank" rel="noopener">
                     <span class="resource-name">Kimi</span>
-                    <img class="resource-icon" src="//statics.moonshot.cn/kimi-web-seo/favicon.ico" alt="Kimi"
+                    <img class="resource-icon" src="https://statics.moonshot.cn/kimi-web-seo/favicon.ico" alt="Kimi"
                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
                         onerror="handleResourceIconError(this)">
                 </a>
                 <a href="https://chatgpt.com/" class="resource-item" target="_blank" rel="noopener">
-                    <span class="resource-name">Kimi</span>
-                    <img class="resource-icon" src="//statics.moonshot.cn/kimi-web-seo/favicon.ico" alt="Kimi"
-                        data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
-                        onerror="handleResourceIconError(this)">
-                </a>
-                <a href="https://www.kimi.com/" class="resource-item" target="_blank" rel="noopener">
-                    <span class="resource-name">Kimi</span>
-                    <img class="resource-icon" src="//statics.moonshot.cn/kimi-web-seo/favicon.ico" alt="Kimi"
-                        data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
-                        onerror="handleResourceIconError(this)">
+                    <span class="resource-name">ChatGPT</span>
+                    <svg class="resource-icon chatgpt-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M12 1C5.923 1 1 5.923 1 12c0 4.867 3.149 8.979 7.521 10.436.55.096.756-.233.756-.522 0-.262-.013-1.128-.013-2.049-2.764.509-3.479-.674-3.699-1.292-.124-.317-.66-1.293-1.127-1.554-.385-.207-.936-.715-.014-.729.866-.014 1.485.797 1.691 1.128.99 1.663 2.571 1.196 3.204.907.096-.715.385-1.196.701-1.471-2.448-.275-5.005-1.224-5.005-5.432 0-1.196.426-2.186 1.128-2.956-.111-.275-.496-1.402.11-2.915 0 0 .921-.288 3.024 1.128a10.193 10.193 0 0 1 2.75-.371c.936 0 1.871.123 2.75.371 2.104-1.43 3.025-1.128 3.025-1.128.605 1.513.221 2.64.111 2.915.701.77 1.127 1.747 1.127 2.956 0 4.222-2.571 5.157-5.019 5.432.399.344.743 1.004.743 2.035 0 1.471-.014 2.654-.014 3.025 0 .289.206.632.756.522C19.851 20.979 23 16.854 23 12c0-6.077-4.922-11-11-11Z"/>
+                    </svg>
                 </a>
             </div>
         </section>
+
+        <!-- 网页工具整合 -->
         <section class="resource-section">
             <h2 class="section-title">网页工具整合</h2>
             <div class="resource-grid">
-                <!-- 
-                    四级：资源项结构
-                    - resource-name: 资源名称（左对齐，flex:1占据空间）
-                    - resource-icon: Logo图标（右对齐，36x36px，flex-shrink: 0防止压缩）
-                    - 回退机制：onerror触发handleResourceIconError函数
-                -->
-                <!-- 小妖精工具箱 -->
                 <a href="https://tool.xyjzy.com/" class="resource-item" target="_blank" rel="noopener">
                     <span class="resource-name">小妖精工具箱</span>
                     <img class="resource-icon" src="https://tool.xyjzy.com/static/images/logo.png" alt="小妖精工具箱"
                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
                         onerror="handleResourceIconError(this)">
                 </a>
-                <!-- 刘明野的工具箱 -->
                 <a href="https://tools.liumingye.cn/" class="resource-item" target="_blank" rel="noopener">
                     <span class="resource-name">刘明野的工具箱</span>
                     <img class="resource-icon" src="https://tools.liumingye.cn/favicon.ico" alt="刘明野的工具箱"
                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
                         onerror="handleResourceIconError(this)">
                 </a>
-                <!-- 歌词字幕在线转换器 -->
-                <a href="https://www.lrccon.com/convert.php?lang=zh-hans" class="resource-item" target="_blank"
-                    rel="noopener">
+                <a href="https://www.lrccon.com/convert.php?lang=zh-hans" class="resource-item" target="_blank" rel="noopener">
                     <span class="resource-name">歌词字幕在线转换器</span>
-                    <img class="resource-icon" src="https://www.lrccon.com/img/logo.svg" alt="可转换歌词字幕文件格式的网站"
+                    <img class="resource-icon" src="https://www.lrccon.com/img/logo.svg" alt="字幕转换工具"
                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
                         onerror="handleResourceIconError(this)">
                 </a>
-                <!-- Toomic-Search MP3 song lyrics(原Musicenc) -->
                 <a href="https://www.toomic.com/" class="resource-item" target="_blank" rel="noopener">
-                    <span class="resource-name">Toomic-Search MP3 song lyrics(原Musicenc)</span>
-                    <img class="resource-icon" src="https://www.toomic.com/zb_users/theme/bijiblog/include/touxiang.jpg"
-                        alt="可查找并下载歌词文件的网站"
+                    <span class="resource-name">Toomic-Search MP3 song lyrics</span>
+                    <img class="resource-icon" src="https://www.toomic.com/zb_users/theme/bijiblog/include/touxiang.jpg" alt="歌词搜索"
                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
                         onerror="handleResourceIconError(this)">
                 </a>
-                <!-- 智能色阶生成器 | 颜色代码表 -->
-                <a href="https://www.ysdaima.com/tools/color-scale/" class="resource-item" target="_blank"
-                    rel="noopener">
+                <a href="https://www.ysdaima.com/tools/color-scale/" class="resource-item" target="_blank" rel="noopener">
                     <span class="resource-name">智能色阶生成器 | 颜色代码表</span>
-                    <img class="resource-icon" src="https://www.ysdaima.com/logo.png" alt="可基于自定义的主色生成渐变色阶，并生成颜色代码表的网站"
+                    <img class="resource-icon" src="https://www.ysdaima.com/logo.png" alt="色阶生成器"
                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
                         onerror="handleResourceIconError(this)">
                 </a>
-                <!-- PNG to ICO Converter - Free Online Icon Maker | ConvertICO -->
                 <a href="https://convertico.com/" class="resource-item" target="_blank" rel="noopener">
-                    <span class="resource-name">PNG to ICO Converter - Free Online Icon Maker | ConvertICO</span>
-                    <img class="resource-icon" src="https://convertico.com/imgs/convertico-com-logo.png"
-                        alt="可将常规图片格式转换成ico格式的网站"
+                    <span class="resource-name">PNG to ICO Converter | ConvertICO</span>
+                    <img class="resource-icon" src="https://convertico.com/imgs/convertico-com-logo.png" alt="ICO转换"
                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
                         onerror="handleResourceIconError(this)">
                 </a>
-                <!-- AppIcon Forge - Create & Customize Stunning App Icons Online -->
-                <a href="https://zhangyu1818.github.io/appicon-forge/" class="resource-item" target="_blank"
-                    rel="noopener">
-                    <span class="resource-name">AppIcon Forge - Create & Customize Stunning App Icons Online</span>
-                    <img class="resource-icon"
-                        src="https://zhangyu1818.github.io/appicon-forge/assets/favicon-e9-BFwBn.ico" alt="可自定义设计图标的网站"
+                <a href="https://zhangyu1818.github.io/appicon-forge/" class="resource-item" target="_blank" rel="noopener">
+                    <span class="resource-name">AppIcon Forge - App Icon Designer</span>
+                    <img class="resource-icon" src="https://zhangyu1818.github.io/appicon-forge/assets/favicon-e9-BFwBn.ico" alt="图标设计"
                         data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png"
                         onerror="handleResourceIconError(this)">
                 </a>
             </div>
         </section>
+
+        <!-- -------------------- 页脚 -------------------- -->
+        <footer class="site-footer">
+            <p class="footer-text">Copyright 2025-2026 Nebula Logs. All rights reserved.</p>
+            <p class="footer-sub">Powered by GitHub Pages</p>
+        </footer>
     </div>
 
     <!-- =================================================================== -->
     <!-- 功能脚本区域（交互逻辑） -->
-    <!-- 描述: 包含搜索引擎切换、搜索执行、分类折叠、资源图标回退等核心功能 -->
-    <!-- 说明: 通用预览系统已提取至preview-system.js；此脚本与布局结构调整无依赖 -->
     <!-- =================================================================== -->
     <script>
         // ==================== 搜索引擎配置模块 ====================
-        // 支持的搜索引擎配置（图标使用内联SVG，避免额外请求）
         const engines = [
             { name: 'Google', url: 'https://www.google.com/search?q=', icon: 'data:image/svg+xml,...' },
             { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: 'data:image/svg+xml,...' },
             { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', icon: '...' },
             { name: 'BiliBili', url: 'https://search.bilibili.com/all?keyword=', icon: '...' },
-            { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', icon: '...' },
             { name: 'GitHub', url: 'https://github.com/search?q=', icon: '...' },
-            { name: 'PixivPid', url: 'https://www.pixiv.net/artworks/', icon: '...' }
         ];
 
         let currentEngineIndex = 0;
         const engineIcon = document.getElementById('engineIcon');
         const engineSwitch = document.getElementById('engineSwitch');
 
-        // 切换搜索引擎: 循环更新图标与提示文本
         function switchEngine() {
             currentEngineIndex = (currentEngineIndex + 1) % engines.length;
             const engine = engines[currentEngineIndex];
             engineIcon.src = engine.icon;
             engineIcon.alt = engine.name;
-            engineSwitch.title = `当前: ${engine.name} (点击切换)`;
+            engineSwitch.title = '当前: ' + engine.name + ' (点击切换)';
         }
 
-        // 执行搜索: 获取输入内容并使用当前引擎打开新标签页
         function performSearch() {
             const input = document.getElementById('search_input');
             const query = input.value.trim();
             if (query) {
                 const engine = engines[currentEngineIndex];
-                window.open(`${engine.url}${encodeURIComponent(query)}`, '_blank');
+                window.open(engine.url + encodeURIComponent(query), '_blank');
                 input.value = '';
             }
         }
 
-        // ==================== 分类折叠模块 ====================
-        // 切换分类卡片的展开/收起状态
-        function toggleCategory(btn) {
-            const content = btn.closest('.category-card').querySelector('.content-wrapper');
-            const isCollapsed = content.classList.contains('collapsed');
-
-            if (isCollapsed) {
-                content.classList.remove('collapsed');
-                btn.classList.remove('collapsed');
-            } else {
-                content.classList.add('collapsed');
-                btn.classList.add('collapsed');
-            }
-        }
-
-        // ==================== 搜索框交互模块 ====================
-        // 监听回车键触发搜索
+        // ==================== 搜索框回车监听 ====================
         document.getElementById('search_input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') performSearch();
+            if (e.key === 'Enter') {
+                performSearch();
+            }
         });
 
-        // ==================== 资源图标错误处理模块 ====================
-        // 功能：当资源图标加载失败时，自动回退到默认阿卡林图片
-        // 触发：img标签的onerror事件（内联调用确保及时触发）
-        // 注意：此函数为全局函数，供HTML内联调用，避免事件委托延迟
+        // ==================== 资源图标回退处理 ====================
         function handleResourceIconError(img) {
             const defaultSrc = img.dataset.defaultSrc;
-            // 防御性检查：避免重复加载默认图片导致死循环
             if (img.src !== defaultSrc) {
                 img.src = defaultSrc;
             }
         }
 
-        // ==================== 滚动动画模块 ====================
-        // 配置：当元素10%进入视口时触发，底部预留50px
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // 为所有分类卡片添加滚动淡入动画
-        document.querySelectorAll('.category-card').forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(40px)';
-            card.style.transition = 'opacity 0.6s var(--trans-smooth), transform 0.6s var(--trans-smooth)';
-            observer.observe(card);
-        });
-
-        // 初始化搜索引擎提示文本
-        engineSwitch.title = `当前: ${engines[0].name} (点击切换)`;
+        // ==================== 初始化搜索引擎提示 ====================
+        engineSwitch.title = '当前: ' + engines[0].name + ' (点击切换)';
     </script>
 
-    <!-- 引入通用预览系统模块 -->
     <script src="/preview-system.js"></script>
 </body>
 
