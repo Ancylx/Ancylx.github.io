@@ -20,7 +20,7 @@
         /* CSS变量：可由控制面板动态调整 */
         :root {
             --gallery-short-height: 200px;
-            --gallery-long-height: 450px;
+            --gallery-long-height: 400px;
         }
 
         .gallery-section {
@@ -121,13 +121,19 @@
             object-fit: cover;
             border-radius: 12px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
+            cursor: zoom-in;
             background: var(--glass-bg);
         }
 
         .photo-item:hover {
             transform: scale(1.03);
             box-shadow: 0 8px 28px rgba(182, 218, 62, 0.2);
+        }
+
+        /* 预览加载状态下的旋转指示器位置适配 */
+        .photo-item.preview-loading {
+            opacity: 0.7;
+            transition: opacity var(--trans-fast);
         }
 
         /* 短图：占1行 */
@@ -198,8 +204,8 @@
             <div class="control-group">
                 <span class="control-label">长图高度</span>
                 <input type="range" class="control-slider" id="longHeightSlider"
-                    min="280" max="700" value="450" step="10">
-                <span class="control-value" id="longHeightValue">450px</span>
+                    min="280" max="700" value="400" step="10">
+                <span class="control-value" id="longHeightValue">400px</span>
             </div>
             <button class="control-reset" id="resetBtn">重置默认</button>
         </div>
@@ -207,43 +213,25 @@
         <!-- ==================== 图片网格 ==================== -->
         <section class="gallery-section">
             <div class="photo-grid">
-                <!-- 短图 -->
-                <img src="https://picsum.photos/seed/s1/600/400" class="photo-item photo-item--short"
-                    alt="示例图片1" loading="lazy">
-                <img src="https://picsum.photos/seed/s2/500/380" class="photo-item photo-item--short"
-                    alt="示例图片2" loading="lazy">
-                <img src="https://picsum.photos/seed/s3/550/420" class="photo-item photo-item--short"
-                    alt="示例图片3" loading="lazy">
+                <!-- 短图（横图，占1行） -->
+                <img src="./images/gallery/short/short_1766457035842.png"
+                    class="photo-item photo-item--short preview-trigger"
+                    alt="示例图片1" loading="lazy"
+                    data-preview-src="./images/gallery/short/short_1766457035842.png">
+                <img src="./images/gallery/short/short_1772983849141.jpeg"
+                    class="photo-item photo-item--short preview-trigger"
+                    alt="示例图片2" loading="lazy"
+                    data-preview-src="./images/gallery/short/short_1772983849141.jpeg">
 
                 <!-- 长图（竖图，占2行） -->
-                <img src="https://picsum.photos/seed/l1/400/800" class="photo-item photo-item--long"
-                    alt="示例图片4" loading="lazy">
-                <img src="https://picsum.photos/seed/l2/350/750" class="photo-item photo-item--long"
-                    alt="示例图片5" loading="lazy">
-
-                <!-- 短图 -->
-                <img src="https://picsum.photos/seed/s4/640/420" class="photo-item photo-item--short"
-                    alt="示例图片6" loading="lazy">
-                <img src="https://picsum.photos/seed/s5/480/360" class="photo-item photo-item--short"
-                    alt="示例图片7" loading="lazy">
-
-                <!-- 长图 -->
-                <img src="https://picsum.photos/seed/l3/420/850" class="photo-item photo-item--long"
-                    alt="示例图片8" loading="lazy">
-
-                <!-- 短图 -->
-                <img src="https://picsum.photos/seed/s6/580/400" class="photo-item photo-item--short"
-                    alt="示例图片9" loading="lazy">
-                <img src="https://picsum.photos/seed/s7/520/390" class="photo-item photo-item--short"
-                    alt="示例图片10" loading="lazy">
-
-                <!-- 长图 -->
-                <img src="https://picsum.photos/seed/l4/380/760" class="photo-item photo-item--long"
-                    alt="示例图片11" loading="lazy">
-
-                <!-- 短图 -->
-                <img src="https://picsum.photos/seed/s8/600/450" class="photo-item photo-item--short"
-                    alt="示例图片12" loading="lazy">
+                <img src="./images/gallery/long/long_1778203228338.png"
+                    class="photo-item photo-item--long preview-trigger"
+                    alt="示例图片4" loading="lazy"
+                    data-preview-src="./images/gallery/long/long_1778203228338.png">
+                <img src="./images/gallery/long/long_1770050714479.jpeg"
+                    class="photo-item photo-item--long preview-trigger"
+                    alt="示例图片5" loading="lazy"
+                    data-preview-src="./images/gallery/long/long_1770050714479.jpeg">
             </div>
         </section>
     </div>
@@ -259,7 +247,7 @@
 
         var defaults = {
             short: 200,
-            long: 450
+            long: 400
         };
 
         function updateShortHeight(value) {
@@ -288,6 +276,7 @@
         });
     </script>
 
+    <script src="/preview-system.js"></script>
 </body>
 
 </html>

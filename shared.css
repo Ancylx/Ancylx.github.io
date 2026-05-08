@@ -609,7 +609,8 @@ body::before {
 }
 
 /* 全局预览容器 - 挂载到根层级避免遮挡 */
-/* 功能: 单例模式，所有预览共享此容器 */
+/* 功能: 单例模式，所有预览共享此容器，尺寸由JS根据图片原始宽高动态设置 */
+/* 约束: max-width/max-height限制不超出视口85%，作为JS计算前的CSS兜底 */
 /* 层级: z-index最高值2147483647，确保最上层显示 */
 /* 动画: 从scale(0)到scale(1)的平滑缩放 */
 .preview-container-global {
@@ -617,12 +618,12 @@ body::before {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
-    width: 400px;
-    height: 400px;
+    max-width: 85vw;
+    max-height: 85vh;
     border-radius: 16px;
     pointer-events: none;
     opacity: 0;
-    transition: var(--trans-smooth);
+    transition: opacity var(--trans-smooth), transform var(--trans-smooth);
     z-index: 2147483647; /* 最高层级确保显示 */
     will-change: transform, opacity;
     isolation: isolate; /* 创建新层叠上下文 */
@@ -1138,11 +1139,6 @@ body::before {
     .profile-avatar-large {
         width: 100px;
         height: 100px;
-    }
-
-    .preview-container-global {
-        width: 300px;
-        height: 300px;
     }
 
     .resource-grid {

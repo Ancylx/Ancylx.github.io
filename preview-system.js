@@ -3,8 +3,13 @@
  * 模块名称: preview-system
  * 功能描述: 为任意元素提供统一的图片悬停预览功能，支持单例模式与延迟预加载
  * 依赖: 无（纯原生JavaScript，兼容ES5+）
- * 版本: v1.0.0
+ * 版本: v1.1.0
  * 更新日志:
+ *   v1.1.0 (2026-05-08):
+ *     - feat: 预览容器尺寸自适应图片原始宽高比，最大约束视口85%
+ *     - feat: 提取图片边缘主色，动态设置边框与光晕颜色
+ *     - refactor: preloadImage返回图片自然尺寸
+ *     - fix: 修复preloadDelay/preloadTimer变量名不一致
  *   v1.0.0 (2025-01-14):
  *     - feat: 实现单例预览容器，避免重复DOM创建
  *     - feat: 支持多元素类型（头像、视频项、链接等）
@@ -16,13 +21,13 @@
 /**
  * 预览系统全局配置
  * @constant {Object} PREVIEW_CONFIG
- * @property {number} containerWidth - 预览容器宽度（像素）
- * @property {number} containerHeight - 预览容器高度（像素）
+ * @property {number} maxWidthRatio - 最大宽度占视口宽度比例
+ * @property {number} maxHeightRatio - 最大高度占视口高度比例
  * @property {number} preloadDelay - 悬停延迟触发时间（毫秒）
  */
 const PREVIEW_CONFIG = {
-    containerWidth: 400,
-    containerHeight: 400,
+    maxWidthRatio: 0.85,
+    maxHeightRatio: 0.85,
     preloadDelay: 150
 };
 
@@ -43,6 +48,118 @@ const previewState = {
     previewContainer: null,
     preloadTimer: null
 };
+
+// ==================== 边缘颜色提取 ====================
+/**
+ * 边缘色缓存
+ * @description 以图片URL为键，缓存提取的边缘平均RGB值，避免重复Canvas计算
+ * @type {Object<string, {r: number, g: number, b: number}|null>}
+ */
+var edgeColorCache = {};
+
+/**
+ * 提取图片四周边缘区域的平均颜色
+ * @description 使用离屏Canvas读取边缘像素（四周各5%宽/高），计算平均RGB
+ *              跨域图片若无CORS头则getImageData会抛出SecurityError，此时回退null
+ * @param {string} src - 图片URL
+ * @returns {Promise<{r: number, g: number, b: number}|null>} 平均RGB对象，失败返回null
+ */
+function extractEdgeColor(src) {
+    if (edgeColorCache.hasOwnProperty(src)) {
+        return Promise.resolve(edgeColorCache[src]);
+    }
+
+    return new Promise(function (resolve) {
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+
+        img.onload = function () {
+            var color = null;
+            try {
+                var canvas = document.createElement('canvas');
+                var w = img.naturalWidth;
+                var h = img.naturalHeight;
+                canvas.width = w;
+                canvas.height = h;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                var ew = Math.max(Math.floor(w * 0.05), 2);
+                var eh = Math.max(Math.floor(h * 0.05), 2);
+                var r = 0, g = 0, b = 0, count = 0;
+
+                function sample(sx, sy, sw, sh) {
+                    try {
+                        var data = ctx.getImageData(sx, sy, sw, sh).data;
+                        for (var i = 0; i < data.length; i += 4) {
+                            r += data[i];
+                            g += data[i + 1];
+                            b += data[i + 2];
+                            count++;
+                        }
+                    } catch (e) { /* 跳过此区域 */ }
+                }
+
+                // 上边
+                sample(0, 0, w, eh);
+                // 下边
+                sample(0, h - eh, w, eh);
+                // 左边（排除上下已采样区域）
+                sample(0, eh, ew, h - eh * 2);
+                // 右边（排除上下已采样区域）
+                sample(w - ew, eh, ew, h - eh * 2);
+
+                if (count > 0) {
+                    color = {
+                        r: Math.round(r / count),
+                        g: Math.round(g / count),
+                        b: Math.round(b / count)
+                    };
+                }
+            } catch (e) {
+                // CORS 安全错误：跨域图片且无 Access-Control-Allow-Origin 头
+                color = null;
+            }
+
+            edgeColorCache[src] = color;
+
+            // 防止缓存无限增长：超过100条时清空
+            var keys = Object.keys(edgeColorCache);
+            if (keys.length > 100) {
+                edgeColorCache = {};
+            }
+
+            resolve(color);
+        };
+
+        img.onerror = function () {
+            edgeColorCache[src] = null;
+            resolve(null);
+        };
+
+        img.src = src;
+    });
+}
+
+/**
+ * 将边缘色应用到预览图片元素
+ * @description 通过行内样式设置border-color与box-shadow，覆盖CSS默认星云绿
+ * @param {HTMLElement} imgEl - 预览<img>元素
+ * @param {{r: number, g: number, b: number}|null} color - 边缘色，null则回退CSS默认
+ */
+function applyEdgeColorToPreview(imgEl, color) {
+    if (color) {
+        var borderColor = 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+        var glowColor = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.5)';
+        var outerGlow = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.2)';
+        imgEl.style.borderColor = borderColor;
+        imgEl.style.boxShadow = '0 0 60px ' + glowColor + ', 0 0 120px ' + outerGlow;
+    } else {
+        // 回退：清空行内样式，由CSS类中的默认星云绿接管
+        imgEl.style.borderColor = '';
+        imgEl.style.boxShadow = '';
+    }
+}
 
 // ==================== 核心功能函数 ====================
 
@@ -74,16 +191,20 @@ function createGlobalPreviewContainer() {
  * @description 异步加载图片，支持超时控制与错误处理，失败时静默处理
  * @param {string} src - 图片URL地址
  * @param {number} [timeout=10000] - 加载超时时间（毫秒），默认10秒
- * @returns {Promise<string>} 成功返回URL，失败返回Error对象
+ * @returns {Promise<{src: string, width: number, height: number}>} 成功返回图片信息对象
  */
 function preloadImage(src, timeout = 10000) {
     return new Promise((resolve, reject) => {
         const img = new Image();
         const timer = setTimeout(() => reject(new Error('加载超时')), timeout);
-        
+
         img.onload = () => {
             clearTimeout(timer);
-            resolve(src);
+            resolve({
+                src: src,
+                width: img.naturalWidth,
+                height: img.naturalHeight
+            });
         };
         img.onerror = () => reject(new Error('图片加载失败'));
         img.src = src;
@@ -110,12 +231,36 @@ function showPreview(element, src) {
     const previewImage = previewContainer.querySelector('.preview-image-global');
 
     preloadImage(src)
-        .then(() => {
+        .then((imgInfo) => {
             previewImage.src = src;
-            // 使用requestAnimationFrame确保动画流畅
+
+            // 根据图片原始尺寸计算容器大小，约束至视口比例内
+            var maxW = Math.floor(window.innerWidth * PREVIEW_CONFIG.maxWidthRatio);
+            var maxH = Math.floor(window.innerHeight * PREVIEW_CONFIG.maxHeightRatio);
+            var w = imgInfo.width;
+            var h = imgInfo.height;
+
+            // 等比缩放：宽度或高度超出约束时按比例缩小
+            if (w > maxW) {
+                h = Math.floor(h * (maxW / w));
+                w = maxW;
+            }
+            if (h > maxH) {
+                w = Math.floor(w * (maxH / h));
+                h = maxH;
+            }
+
+            previewContainer.style.width = w + 'px';
+            previewContainer.style.height = h + 'px';
+
             requestAnimationFrame(() => {
                 previewContainer.classList.add('show');
                 previewState.isShown = true;
+            });
+
+            // 提取图片边缘色并动态应用边框光效（异步，不影响预览即时显示）
+            extractEdgeColor(src).then(function (edgeColor) {
+                applyEdgeColorToPreview(previewImage, edgeColor);
             });
         })
         .catch(error => {
@@ -143,12 +288,14 @@ function hidePreview() {
     previewState.isShown = false;
     previewState.currentElement = null;
 
-    // 延迟清空图片源，确保300ms淡出动画完成
+    // 延迟清空图片源与容器尺寸，确保300ms淡出动画完成
     setTimeout(() => {
         const previewImage = previewContainer.querySelector('.preview-image-global');
         if (previewImage) {
             previewImage.src = '';
         }
+        previewContainer.style.width = '';
+        previewContainer.style.height = '';
     }, 300);
 }
 
