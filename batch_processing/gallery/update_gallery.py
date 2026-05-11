@@ -1,4 +1,4 @@
-# update_gallery.py - 增量更新 gallery.html，仅添加新图片，避免重复
+# update_gallery.py - 增量更新 gallery.html，仅添加新图片，避免重复；新图片带 alt 文件名
 
 import os
 import re
@@ -18,11 +18,9 @@ FILENAME_REGEX = re.compile(
 def find_existing_srcs(html):
     """从 gallery.html 的 photo-grid 中提取所有图片的 src"""
     srcs = set()
-    # 匹配 photo-grid 内部的 img 标签，提取 src
     pattern = r'<img[^>]+src="([^"]+)"'
     matches = re.findall(pattern, html)
     for src in matches:
-        # 统一转换为相对于根路径的格式，与扫描生成的格式一致
         if src.startswith("/images/gallery/"):
             srcs.add(src)
     return srcs
@@ -42,22 +40,21 @@ def find_gallery_images():
 
 def get_indent_from_existing(html):
     """尝试从现有 img 标签中提取缩进，若没有则返回默认 16 空格"""
-    # 匹配第一个 img 标签行，提取行首空格
     match = re.search(r'\n( *?)<img ', html)
     if match:
-        return match.group(1)  # 空格字符串
-    # 没有 img 标签时，使用 16 空格
+        return match.group(1)
     return "                "
 
 def generate_img_tag(filename, indent):
-    """生成带缩进的 img 标签"""
+    """生成带 alt 属性的 img 标签"""
     parts = filename.rsplit('_', 3)
     category = parts[-1].split('.')[0].lower()
     src = f"/images/gallery/{filename}"
+    base_name = os.path.splitext(filename)[0]
     return (
         f'{indent}<img src="{src}"\n'
         f'{indent}     class="photo-item photo-item--{category} preview-trigger" loading="lazy"\n'
-        f'{indent}     data-preview-src="{src}">'
+        f'{indent}     data-preview-src="{src}" alt="{base_name}">'
     )
 
 def update_html():
@@ -77,7 +74,7 @@ def update_html():
         print("gallery 文件夹中没有符合格式的图片。")
         return
 
-    # 3. 过滤出新图片（文件夹中有但 HTML 中没有的）
+    # 3. 过滤出新图片
     new_images = []
     for img in all_images:
         src = f"/images/gallery/{img}"
@@ -90,36 +87,26 @@ def update_html():
 
     print(f"发现 {len(new_images)} 张新图片，准备插入...")
 
-    # 4. 获取缩进样式（与现有 img 保持一致）
+    # 4. 获取缩进样式
     indent = get_indent_from_existing(html)
 
-    # 5. 生成新图片的 HTML 块
+    # 5. 生成新图片的 HTML 块（带 alt）
     tags = [generate_img_tag(img, indent) for img in new_images]
     new_block = "\n".join(tags)
 
-    # 6. 定位 photo-grid 的结束标签 </div>，并在其前插入新内容
-    # 使用正则找到整个 photo-grid 块，进行替换
+    # 6. 插入到 photo-grid 内原有内容之后
     pattern = r'(<div class="photo-grid">)(.*?)(</div>)'
     match = re.search(pattern, html, re.DOTALL)
     if not match:
         print("错误：未在 HTML 中找到 <div class=\"photo-grid\">...</div> 结构。")
         return
 
-    # 原有中间内容
     old_inner = match.group(2)
-    # 确保在新内容前有换行，且不破坏原有缩进
     if old_inner and not old_inner.endswith('\n'):
         old_inner += '\n'
 
     new_inner = old_inner + new_block + '\n' + ' ' * (len(indent) - 4 if len(indent) >= 4 else 0)
-    # 注意：上面为 </div> 前加适当缩进，但原有模板中 </div> 与 <div> 缩进一致
-    # 从原 HTML 中提取 </div> 前的缩进，更稳健的方法是直接保留原有缩进，不改变 </div>
-    # 我们重建的 </div> 会附带原有缩进？我们替换整个块，所以必须保持 </div> 的缩进与原来相同。
-    # 我们可以在匹配的 prefix 和 suffix 中保留原有内容，然后构造新块。
-    # 简便方法：用字符串替换，不修改 </div> 原始缩进，而是只替换中间内容。
-    # 所以采用以下方式：
     new_html = html[:match.start(2)] + new_inner + html[match.end(2):]
-    # 这将在原中间内容后追加新块，并保留原始 </div> 及其缩进，无需额外缩进处理。
 
     # 7. 写回文件
     with open(HTML_PATH, "w", encoding="utf-8") as f:
