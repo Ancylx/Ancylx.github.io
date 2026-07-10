@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+<!-- 学号：2024214572 姓名：杨沛鑫 -->
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>程序开发类</title>
-<link rel="stylesheet" href="/shared.css">
+<link rel="stylesheet" href="/css/shared.css">
 </head>
 <body>
 
@@ -14,6 +15,8 @@
 </div>
 
 <div class="main-container">
+  <a href="../../index.html" class="back-link">← 返回首页</a>
+
   <!-- 标题 -->
   <header class="header">
     <h1 class="main-title">程序开发类</h1>
@@ -25,27 +28,27 @@
     <h2 class="section-title">程序</h2>
     <div class="resource-grid">
       <a href="https://www.runoob.com" class="resource-item" target="_blank" rel="noopener">
-        <img class="resource-icon" src="https://www.runoob.com/wp-content/themes/runoob/assets/img/runoob-logo.png" alt="菜鸟教程">
+        <img class="resource-icon" src="https://www.runoob.com/wp-content/themes/runoob/assets/img/runoob-logo.png" alt="菜鸟教程" data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png" onerror="handleResourceIconError(this)">
         <span class="resource-name">菜鸟编程</span>
       </a>
       <a href="https://codecombat.com/" class="resource-item" target="_blank" rel="noopener">
-        <img class="resource-icon" src="https://codecombat.com/images/pages/base/logo.webp" alt="菜鸟教程">
+        <img class="resource-icon" src="https://codecombat.com/images/pages/base/logo.webp" alt="菜鸟教程" data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png" onerror="handleResourceIconError(this)">
         <span class="resource-name">CodeCombat</span>
       </a>
       <a href="https://www.w3schools.com/" class="resource-item" target="_blank" rel="noopener">
-        <img class="resource-icon" src="https://avatars.githubusercontent.com/u/77673807" alt="W3Schools">
+        <img class="resource-icon" src="https://avatars.githubusercontent.com/u/77673807" alt="W3Schools" data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png" onerror="handleResourceIconError(this)">
         <span class="resource-name">W3Schools</span>
       </a>
       <a href="https://liaoxuefeng.com/?src=redirect" class="resource-item" target="_blank" rel="noopener">
-        <img class="resource-icon" src="https://liaoxuefeng.com/static/logo.svg" alt="廖雪峰的官方网站">
+        <img class="resource-icon" src="https://liaoxuefeng.com/static/logo.svg" alt="廖雪峰的官方网站" data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png" onerror="handleResourceIconError(this)">
         <span class="resource-name">廖雪峰的官方网站</span>
       </a>
       <a href="https://www.ghxi.com" class="resource-item" target="_blank" rel="noopener">
-        <img class="resource-icon" src="https://www.ghxi.com/wp-content/uploads/2019/12/2020logo.png" alt="果壳剥壳">
+        <img class="resource-icon" src="https://www.ghxi.com/wp-content/uploads/2019/12/2020logo.png" alt="果壳剥壳" data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png" onerror="handleResourceIconError(this)">
         <span class="resource-name">果壳剥壳</span>
       </a>
       <a href="https://www.gy328.com/" class="resource-item" target="_blank" rel="noopener">
-        <img class="resource-icon" src="https://www.gy328.com/wp-content/uploads/2024/06/1717599115-gkbai.png" alt="极客应用">
+        <img class="resource-icon" src="https://www.gy328.com/wp-content/uploads/2024/06/1717599115-gkbai.png" alt="极客应用" data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png" onerror="handleResourceIconError(this)">
         <span class="resource-name">极客应用</span>
       </a>
     </div>
@@ -342,6 +345,13 @@ document.querySelectorAll('.category-card').forEach(card => {
   observer.observe(card);
 });
 
+
+function handleResourceIconError(img) {
+            var defaultSrc = img.dataset.defaultSrc;
+            if (img.src !== defaultSrc) {
+                img.src = defaultSrc;
+            }
+        }
 </script>
 
 </body>

@@ -1,0 +1,494 @@
+<!-- 学号：2024214572 姓名：杨沛鑫 -->
+<!--
+ * 星云日志 - 找回密码页面
+ * 部署地址：https://ancylx.github.io/forgot.html
+ * 功能：邮箱验证码找回密码、发送验证码倒计时、正则实时校验、玻璃拟态面板
+ * 依赖：shared.css（全局样式表）
+ * 版本：v1.0.0
+-->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    <meta name="description" content="星云日志 - 找回密码">
+    <title>找回密码 - 星云日志</title>
+    <link rel="stylesheet" href="/css/shared.css">
+
+    <style>
+        /* =================================================================== */
+        /* 找回密码页专属样式 */
+        /* =================================================================== */
+
+        /* 面板容器 - 居中布局 */
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        /* 卡片 - 玻璃拟态 */
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 36px 32px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        /* 输入组 */
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color var(--trans-fast), box-shadow var(--trans-fast);
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 12px rgba(182, 218, 62, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: var(--text-dim);
+        }
+
+        /* 输入框校验状态 */
+        .input-group input.valid {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 8px rgba(182, 218, 62, 0.15);
+        }
+
+        .input-group input.invalid {
+            border-color: #f87171;
+            box-shadow: 0 0 8px rgba(248, 113, 113, 0.2);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* 错误提示 */
+        .error-msg {
+            display: none;
+            font-size: 0.78rem;
+            color: #f87171;
+            margin-top: 4px;
+            padding-left: 4px;
+            letter-spacing: 0.03em;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        /* 验证码行 - 输入框 + 发送按钮 */
+        .sms-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .sms-row .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .sms-send-btn {
+            flex-shrink: 0;
+            align-self: flex-end;
+            margin-bottom: 0;
+            padding: 12px 16px;
+            background: rgba(182, 218, 62, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--accent-primary);
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background var(--trans-fast), border-color var(--trans-fast);
+        }
+
+        .sms-send-btn:hover:not(:disabled) {
+            background: rgba(182, 218, 62, 0.2);
+            border-color: var(--accent-primary);
+        }
+
+        .sms-send-btn:disabled {
+            color: var(--text-dim);
+            cursor: not-allowed;
+            background: rgba(148, 163, 184, 0.1);
+        }
+
+        /* 提交按钮 */
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent-dim) 0%, var(--accent-primary) 50%, var(--accent-glow) 100%);
+            border: none;
+            border-radius: 12px;
+            color: var(--bg-deep);
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: inherit;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: transform var(--trans-fast), box-shadow var(--trans-fast), filter var(--trans-fast);
+            margin-top: 8px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(182, 218, 62, 0.35);
+            filter: brightness(1.08);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+            filter: brightness(0.95);
+        }
+
+        /* 提交按钮加载态 */
+        .submit-btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+            position: relative;
+            color: transparent;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--bg-deep);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 底部链接 */
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .form-footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color var(--trans-fast);
+        }
+
+        .form-footer a:hover {
+            color: var(--accent-glow);
+            text-decoration: underline;
+        }
+
+        /* 亮色模式适配 */
+        @media (prefers-color-scheme: light) {
+            .input-group input {
+                background: rgba(255, 255, 255, 0.5);
+            }
+            .sms-send-btn {
+                background: rgba(155, 194, 15, 0.1);
+            }
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 28px 20px;
+            }
+            .sms-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .sms-send-btn {
+                align-self: stretch;
+                margin-top: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ==================== 装饰线条 ==================== -->
+    <div class="decor-lines">
+        <div class="line-tl"></div>
+        <div class="line-br"></div>
+    </div>
+
+    <!-- ==================== 主容器 ==================== -->
+    <div class="main-container">
+
+        <!-- 返回首页 -->
+        <a href="../../index.html" class="back-link">← 返回首页</a>
+
+        <!-- 标题区域 -->
+        <header class="header">
+            <h1 class="main-title">找回密码</h1>
+            <p class="subtitle">通过邮箱验证码重置密码</p>
+        </header>
+
+        <!-- 找回密码面板 -->
+        <div class="login-wrapper">
+            <div class="login-card">
+
+                <!-- ===== 找回密码表单 ===== -->
+                <form id="form-forgot" novalidate>
+                    <div class="input-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" id="email" placeholder="请输入注册时使用的邮箱"
+                            autocomplete="email" maxlength="64">
+                        <span class="error-msg" id="err-email"></span>
+                    </div>
+
+                    <div class="sms-row">
+                        <div class="input-group">
+                            <label for="code">验证码</label>
+                            <input type="text" id="code" placeholder="6位数字验证码"
+                                autocomplete="one-time-code" maxlength="6" inputmode="numeric">
+                            <span class="error-msg" id="err-code"></span>
+                        </div>
+                        <button type="button" class="sms-send-btn" id="sendCodeBtn">发送验证码</button>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="newPassword">新密码</label>
+                        <input type="password" id="newPassword" placeholder="8-20位，至少含字母与数字"
+                            autocomplete="new-password" maxlength="20">
+                        <span class="error-msg" id="err-newPassword"></span>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submit-btn">提交重置</button>
+                </form>
+
+                <!-- 底部跳转链接 -->
+                <div class="form-footer">
+                    <a href="login.html">想起密码了？返回登录</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- 找回密码页交互脚本 -->
+    <!-- =================================================================== -->
+    <script>
+        (function () {
+            // ==================== 正则校验规则 ====================
+            const RULES = {
+                // 邮箱：标准邮箱格式
+                email: {
+                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: '请输入有效的邮箱地址'
+                },
+                // 验证码：6 位纯数字
+                code: {
+                    pattern: /^\d{6}$/,
+                    message: '验证码为 6 位数字'
+                },
+                // 新密码：8-20 位，至少包含字母和数字
+                newPassword: {
+                    pattern: /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+={}\[\]:;"'<>,.?\/~`-]{8,20}$/,
+                    message: '密码需 8-20 位，且至少包含字母和数字'
+                }
+            };
+
+            /**
+             * 校验单个字段
+             * @param {HTMLInputElement} input
+             * @param {string} ruleKey - RULES 中的键名
+             * @returns {boolean}
+             */
+            function validateField(input, ruleKey) {
+                const rule = RULES[ruleKey];
+                const errorEl = document.getElementById('err-' + ruleKey);
+                const value = input.value.trim();
+
+                input.classList.remove('valid', 'invalid');
+
+                if (value === '') {
+                    return false;
+                }
+
+                if (rule.pattern.test(value)) {
+                    input.classList.add('valid');
+                    if (errorEl) {
+                        errorEl.classList.remove('show');
+                        errorEl.textContent = '';
+                    }
+                    return true;
+                } else {
+                    input.classList.add('invalid');
+                    if (errorEl) {
+                        errorEl.textContent = rule.message;
+                        errorEl.classList.add('show');
+                    }
+                    return false;
+                }
+            }
+
+            // ==================== DOM引用 ====================
+            const emailInput = document.getElementById('email');
+            const codeInput = document.getElementById('code');
+            const newPasswordInput = document.getElementById('newPassword');
+            const sendCodeBtn = document.getElementById('sendCodeBtn');
+            const submitBtn = document.getElementById('submit-btn');
+            const form = document.getElementById('form-forgot');
+
+            // ==================== 实时输入校验（失焦触发） ====================
+            function bindField(input, ruleKey) {
+                input.addEventListener('blur', () => {
+                    if (input.value.trim() !== '') {
+                        validateField(input, ruleKey);
+                    }
+                });
+                input.addEventListener('input', () => {
+                    if (input.classList.contains('invalid')) {
+                        input.classList.remove('invalid');
+                        const err = document.getElementById('err-' + ruleKey);
+                        if (err) {
+                            err.classList.remove('show');
+                            err.textContent = '';
+                        }
+                    }
+                });
+            }
+
+            bindField(emailInput, 'email');
+            bindField(codeInput, 'code');
+            bindField(newPasswordInput, 'newPassword');
+
+            // 验证码输入只允许数字
+            codeInput.addEventListener('input', () => {
+                codeInput.value = codeInput.value.replace(/\D/g, '');
+            });
+
+            // ==================== 验证码倒计时 ====================
+            let countdownTimer = null;
+            let countdownRemaining = 0;
+
+            sendCodeBtn.addEventListener('click', function () {
+                // 先校验邮箱
+                const emailValue = emailInput.value.trim();
+                if (!RULES.email.pattern.test(emailValue)) {
+                    validateField(emailInput, 'email');
+                    emailInput.classList.add('invalid');
+                    return;
+                }
+
+                // 开始倒计时
+                countdownRemaining = 60;
+                sendCodeBtn.disabled = true;
+                updateCountdownText();
+
+                countdownTimer = setInterval(() => {
+                    countdownRemaining--;
+                    if (countdownRemaining <= 0) {
+                        clearInterval(countdownTimer);
+                        countdownTimer = null;
+                        sendCodeBtn.disabled = false;
+                        sendCodeBtn.textContent = '重新发送';
+                    } else {
+                        updateCountdownText();
+                    }
+                }, 1000);
+            });
+
+            function updateCountdownText() {
+                sendCodeBtn.textContent = countdownRemaining + 's 后重发';
+            }
+
+            // ==================== 表单提交处理 ====================
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                let allValid = true;
+
+                // 校验邮箱
+                const emailValid = validateField(emailInput, 'email');
+                if (!emailValid) {
+                    allValid = false;
+                    if (emailInput.value.trim() === '') {
+                        emailInput.classList.add('invalid');
+                        document.getElementById('err-email').textContent = RULES.email.message;
+                        document.getElementById('err-email').classList.add('show');
+                    }
+                }
+
+                // 校验验证码（不可为空）
+                const codeValid = validateField(codeInput, 'code');
+                if (!codeValid) {
+                    allValid = false;
+                    if (codeInput.value.trim() === '') {
+                        codeInput.classList.add('invalid');
+                        document.getElementById('err-code').textContent = '请输入验证码';
+                        document.getElementById('err-code').classList.add('show');
+                    }
+                }
+
+                // 校验新密码
+                const pwdValid = validateField(newPasswordInput, 'newPassword');
+                if (!pwdValid) {
+                    allValid = false;
+                    if (newPasswordInput.value.trim() === '') {
+                        newPasswordInput.classList.add('invalid');
+                        document.getElementById('err-newPassword').textContent = RULES.newPassword.message;
+                        document.getElementById('err-newPassword').classList.add('show');
+                    }
+                }
+
+                if (!allValid) return;
+
+                // 校验通过 — 模拟异步提交
+                submitBtn.classList.add('loading');
+                submitBtn.textContent = '';
+
+                setTimeout(() => {
+                    alert('密码重置成功！请使用新密码重新登录。');
+                    window.location.href = 'login.html';
+                }, 1200);
+            });
+
+        })();
+    </script>
+
+</body>
+
+</html>

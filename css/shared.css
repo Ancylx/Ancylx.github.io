@@ -1,31 +1,10 @@
+/* 学号：2024214572 姓名：杨沛鑫 */
 /*
  * 星云日志 - 全局样式表
  * GitHub Pages: https://ancylx.github.io
- * 主题色: #b6da3e (星云绿)
- * 描述: 集中管理所有页面样式，支持自动亮暗模式切换
+ * 主题色: #b6da3e 
+ * 描述: 集中管理所有页面样式
  * 版本: v1.3.0
- * 更新日志:
- *   v1.3.0 (2026-05-08):
- *     - feat: 新增Logo容器与SVG图标样式
- *     - feat: 新增Banner宣传区域样式（纯CSS背景+微星点）
- *     - feat: 新增栏目导航卡片样式（nav-grid/nav-card系列）
- *     - feat: 新增返回首页链接样式（back-link）
- *     - feat: 新增页脚样式（site-footer）
- *     - feat: 新增装饰线条样式（decor-lines，用于子页面）
- *     - refactor: 调整.header布局适配Logo容器
- *   v1.2.3 (2025-01-14):
- *     - fix: 移除.video-link中.preview-trigger相关样式说明（视频预览功能已禁用）
- *   v1.2.2 (2025-01-14):
- *     - feat: 资源导航网格调整为每行最多4项（minmax: 240px, 1fr）
- *     - feat: 资源图标尺寸宽度自动，高度改为18px，改善Logo显示完整性
- *     - refactor: 优化resource-item内边距以适配新图标尺寸
- *   v1.2.1 (2025-01-14):
- *     - feat: 资源导航区域Logo图标右对齐布局（justify-content: space-between）
- *     - fix: 修复横图Logo显示不全问题（object-fit: cover）
- *   v1.2.0 (2025-01-14):
- *     - feat: 重构video-link布局为flex双向对齐模式，video-title左对齐，video-badges右对齐
- *     - feat: 新增video-badges容器组件，支持flex-direction: row-reverse实现标签从右向左排列
- *     - refactor: 优化多标签场景下的视觉对齐一致性，提升内容可读性
  */
 
 /* =================================================================== */
@@ -138,6 +117,9 @@ body::before {
         radial-gradient(1px 1px at 80% 10%, var(--accent-primary), transparent);
     background-size: 300px 300px;
     animation: stars 120s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+    animation-play-state: running;
     pointer-events: none;
     z-index: -1;
 }
@@ -325,74 +307,153 @@ body::before {
 }
 
 /* =================================================================== */
-/* 六、内容组件 - Banner宣传区域 */
-/* 描述: CSS纯背景实现星空色带+微星点，无图片依赖 */
-/* 策略: 多层径向渐变模拟漂浮星尘，亮色模式自动适配 */
+/* 六、内容组件 - 轮播图 */
+/* 描述: 淡入淡出切换，带指示点与左右箭头，悬停暂停自动播放 */
+/* 交互: 点击圆点/箭头跳转，鼠标悬停暂停，4秒自动轮播 */
 /* =================================================================== */
 
-.banner {
+.carousel {
     width: 100%;
     max-width: 900px;
     margin: 0 auto 60px;
-    padding: 48px 24px;
-    text-align: center;
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.5) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(51, 65, 85, 0.5) 100%);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
     position: relative;
+    border-radius: 20px;
     overflow: hidden;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
     animation: fadeIn 0.8s ease-out 0.1s both;
+    /* 固定宽高比：900:400 = 2.25:1 */
+    aspect-ratio: 900 / 400;
 }
 
-/* 微星点叠加层 */
-.banner::before {
-    content: '';
+/* 图片列表容器 */
+.carousel-list {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* 单张幻灯片 */
+.carousel-slide {
     position: absolute;
     inset: 0;
-    background-image:
-        radial-gradient(1.5px 1.5px at 15% 30%, var(--accent-primary), transparent),
-        radial-gradient(1px 1px at 50% 20%, var(--accent-glow), transparent),
-        radial-gradient(1.5px 1.5px at 85% 60%, var(--accent-primary), transparent),
-        radial-gradient(1px 1px at 30% 80%, var(--accent-dim), transparent),
-        radial-gradient(1px 1px at 70% 45%, var(--accent-glow), transparent),
-        radial-gradient(1px 1px at 10% 70%, var(--accent-dim), transparent),
-        radial-gradient(1.5px 1.5px at 60% 85%, var(--accent-primary), transparent);
-    background-size: 200px 200px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
     pointer-events: none;
-    opacity: 0.6;
 }
 
-.banner-tagline {
-    font-size: 2rem;
-    font-weight: 300;
-    color: var(--accent-primary);
-    text-shadow: 0 0 12px rgba(182, 218, 62, 0.5);
-    letter-spacing: 0.1em;
-    margin-bottom: 12px;
-    position: relative;
-    z-index: 1;
+.carousel-slide.active {
+    opacity: 1;
+    pointer-events: auto;
 }
 
-.banner-subtitle {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    letter-spacing: 0.08em;
-    position: relative;
-    z-index: 1;
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-/* 亮色模式Banner适配 */
-@media (prefers-color-scheme: light) {
-    .banner {
-        background: linear-gradient(135deg, rgba(240, 244, 248, 0.7) 0%, rgba(226, 232, 240, 0.9) 50%, rgba(203, 213, 225, 0.7) 100%);
-        border-color: var(--glass-border);
+/* ===== 左右切换箭头 ===== */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--trans-fast), border-color var(--trans-fast), opacity var(--trans-fast);
+    opacity: 0;
+    z-index: 2;
+}
+
+.carousel:hover .carousel-arrow {
+    opacity: 1;
+}
+
+.carousel-arrow:hover {
+    background: rgba(182, 218, 62, 0.15);
+    border-color: var(--accent-primary);
+    box-shadow: var(--line-glow);
+}
+
+.carousel-arrow--left  { left: 12px; }
+.carousel-arrow--right { right: 12px; }
+
+/* ===== 底部分页指示点 ===== */
+.carousel-dots {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+}
+
+.carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(248, 250, 252, 0.35);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    transition: background var(--trans-fast), border-color var(--trans-fast), transform var(--trans-fast);
+}
+
+.carousel-dot:hover {
+    background: rgba(182, 218, 62, 0.5);
+    transform: scale(1.2);
+}
+
+.carousel-dot.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 8px rgba(182, 218, 62, 0.6);
+    transform: scale(1.15);
+}
+
+/* ===== 响应式适配 ===== */
+@media (max-width: 768px) {
+    .carousel {
+        max-width: 100%;
+        border-radius: 14px;
+        margin-bottom: 40px;
     }
-    .banner::before {
-        opacity: 0.4;
+    .carousel-arrow {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+        opacity: 1;
     }
-    .banner-tagline {
-        text-shadow: 0 0 12px rgba(155, 194, 15, 0.3);
+    .carousel-arrow--left  { left: 8px; }
+    .carousel-arrow--right { right: 8px; }
+    .carousel-dots { gap: 8px; bottom: 10px; }
+    .carousel-dot { width: 8px; height: 8px; }
+}
+
+@media (max-width: 480px) {
+    .carousel {
+        border-radius: 10px;
+        margin-bottom: 32px;
     }
+    .carousel-arrow {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    .carousel-arrow--left  { left: 6px; }
+    .carousel-arrow--right { right: 6px; }
 }
 
 /* =================================================================== */
@@ -442,6 +503,22 @@ body::before {
     transform: scale(1.05);
     box-shadow: 0 0 30px var(--accent-glow);
 }
+
+	/* 头像弹跳动画 */
+	.avatar-bounce {
+	    cursor: pointer;
+	}
+
+	.avatar-bounce:hover img {
+	    animation: avatarBounce 0.6s ease;
+	}
+
+	@keyframes avatarBounce {
+	    0%, 100% { transform: translateY(0); }
+	    30%  { transform: translateY(-10px); }
+	    50%  { transform: translateY(-4px); }
+	    70%  { transform: translateY(-8px); }
+	}
 
 /* 右侧链接按钮列表 */
 .profile-links {
@@ -512,6 +589,35 @@ body::before {
     opacity: 1;
     transform: translateX(4px);
 }
+
+
+	/* 悬浮固定状态 */
+	.profile-container--floating {
+	    position: fixed;
+	    top: 50%;
+	    left: 32px;
+	    transform: translateY(-50%);
+	    z-index: 1000;
+	    max-width: 260px;
+	    width: auto;
+	    margin: 0;
+	    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4), var(--glass-shadow);
+	    transition: transform 0.3s var(--trans-smooth), box-shadow 0.3s var(--trans-smooth);
+	}
+
+	.profile-container--floating:hover {
+	    transform: translateY(-50%) scale(1.02);
+	    box-shadow: 0 16px 56px rgba(182, 218, 62, 0.15), var(--glass-shadow);
+	}
+
+	/* 占位块，维持原文档流高度，防止下方内容上移 */
+	.profile-placeholder {
+	    width: 100%;
+	    height: 180px;
+	    opacity: 0;
+	    pointer-events: none;
+	    user-select: none;
+	}
 
 /* =================================================================== */
 /* 八、内容组件 - 栏目导航卡片 */
@@ -1037,6 +1143,18 @@ body::before {
 /* =================================================================== */
 
 /* 中等屏幕（平板） - 768px断点 */
+
+/* 大平板/小桌面 - 1024px断点 */
+/* 策略: 隐藏左侧悬浮个人组件，释放横向空间 */
+@media (max-width: 1024px) {
+    .profile-container--floating {
+        display: none !important;
+    }
+    .profile-placeholder {
+        display: none !important;
+    }
+}
+
 /* 策略: 网格布局从多列变为双列或单列，个人主页改为上下排列 */
 @media (max-width: 768px) {
     .main-title {
@@ -1046,18 +1164,6 @@ body::before {
     .logo-svg {
         width: 56px;
         height: 56px;
-    }
-
-    /* Banner缩小内边距与字号 */
-    .banner {
-        padding: 36px 20px;
-        margin-bottom: 40px;
-    }
-    .banner-tagline {
-        font-size: 1.5rem;
-    }
-    .banner-subtitle {
-        font-size: 0.9rem;
     }
 
     /* 栏目导航: 平板变为2列 */
@@ -1116,18 +1222,6 @@ body::before {
     }
     .logo-container {
         gap: 10px;
-    }
-
-    /* Banner缩小 */
-    .banner {
-        padding: 28px 16px;
-        margin-bottom: 32px;
-    }
-    .banner-tagline {
-        font-size: 1.2rem;
-    }
-    .banner-subtitle {
-        font-size: 0.85rem;
     }
 
     /* 栏目导航: 手机变为单列 */

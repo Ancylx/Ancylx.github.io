@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+<!-- 学号：2024214572 姓名：杨沛鑫 -->
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>人工智能类</title>
-<link rel="stylesheet" href="/shared.css">
+<link rel="stylesheet" href="/css/shared.css">
 </head>
 <body>
 
@@ -14,6 +15,8 @@
 </div>
 
 <div class="main-container">
+  <a href="../../index.html" class="back-link">← 返回首页</a>
+
   <!-- 标题 -->
   <header class="header">
     <h1 class="main-title">人工智能类</h1>
@@ -25,14 +28,11 @@
     <h2 class="section-title">大模型</h2>
     <div class="resource-grid">
       <a href="https://www.doubao.com/chat/" class="resource-item" target="_blank" rel="noopener">
-        <img class="resource-icon" src="https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/samantha/logo-icon-white-bg.png" alt="菜鸟教程">
+        <img class="resource-icon" src="https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/samantha/logo-icon-white-bg.png" alt="菜鸟教程" data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png" onerror="handleResourceIconError(this)">
         <span class="resource-name">豆包</span>
       </a>
       <a href="https://chat.deepseek.com/" class="resource-item" target="_blank" rel="noopener">
-        <img class="resource-icon" src="https://ts4.tc.mm.bing.net/th/id/ODF.YxK1MUJaRoBfBG4UGNrXAA?w=32&h=32&qlt=90&pcl=fffffc&o=6&pid=1.2" alt="DeepSeek">
-        <span class="resource-name">DeepSeek</span>
-      <a href="https://chat.deepseek.com/" class="resource-item" target="_blank" rel="noopener">
-        <img class="resource-icon" src="https://ts4.tc.mm.bing.net/th/id/ODF.YxK1MUJaRoBfBG4UGNrXAA?w=32&h=32&qlt=90&pcl=fffffc&o=6&pid=1.2" alt="DeepSeek">
+        <img class="resource-icon" src="https://ts4.tc.mm.bing.net/th/id/ODF.YxK1MUJaRoBfBG4UGNrXAA?w=32&h=32&qlt=90&pcl=fffffc&o=6&pid=1.2" alt="DeepSeek" data-default-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/default/%E9%98%BF%E5%8D%A1%E6%9E%97.png" onerror="handleResourceIconError(this)">
         <span class="resource-name">DeepSeek</span>
       </a>
       <a href="https://chatgpt.com/" class="resource-item" target="_blank" rel="noopener">
@@ -190,6 +190,13 @@ document.querySelectorAll('.category-card').forEach(card => {
   observer.observe(card);
 });
 
+
+function handleResourceIconError(img) {
+            var defaultSrc = img.dataset.defaultSrc;
+            if (img.src !== defaultSrc) {
+                img.src = defaultSrc;
+            }
+        }
 </script>
 
 </body>

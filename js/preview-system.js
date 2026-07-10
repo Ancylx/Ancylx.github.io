@@ -1,20 +1,10 @@
+// 学号：2024214572 姓名：杨沛鑫
 /**
  * 星云日志 - 通用悬停预览系统
  * 模块名称: preview-system
  * 功能描述: 为任意元素提供统一的图片悬停预览功能，支持单例模式与延迟预加载
  * 依赖: 无（纯原生JavaScript，兼容ES5+）
  * 版本: v1.1.0
- * 更新日志:
- *   v1.1.0 (2026-05-08):
- *     - feat: 预览容器尺寸自适应图片原始宽高比，最大约束视口85%
- *     - feat: 提取图片边缘主色，动态设置边框与光晕颜色
- *     - refactor: preloadImage返回图片自然尺寸
- *     - fix: 修复preloadDelay/preloadTimer变量名不一致
- *   v1.0.0 (2025-01-14):
- *     - feat: 实现单例预览容器，避免重复DOM创建
- *     - feat: 支持多元素类型（头像、视频项、链接等）
- *     - feat: 延迟预加载与加载状态指示
- *     - style: 遵循JSDoc规范，100%中文注释
  */
 
 // ==================== 配置常量 ====================
@@ -200,12 +190,17 @@ function preloadImage(src, timeout = 10000) {
 
         img.onload = () => {
             clearTimeout(timer);
+            // 修复：如果图片自然宽高为 0，说明实际加载失败，直接拒绝
+            if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+                reject(new Error('图片加载异常或跨域失败导致宽高为0'));
+                return;
+            }
             resolve({
                 src: src,
                 width: img.naturalWidth,
                 height: img.naturalHeight
             });
-        };
+            };
         img.onerror = () => reject(new Error('图片加载失败'));
         img.src = src;
     });
@@ -368,3 +363,129 @@ if (document.readyState === 'loading') {
     // DOM已准备就绪（脚本异步加载场景）
     initializePreview('.preview-trigger');
 }
+
+// ==================== 轮播图模块 ====================
+/**
+ * 首页轮播图控制器
+ * 模块名称: carousel
+ * 功能描述: 自动轮播、指示点跳转、箭头切换、悬停暂停
+ * 版本: v1.0.0
+ */
+(function () {
+    var carousel = document.getElementById('mainCarousel');
+    if (!carousel) return; // 非首页无轮播，安全退出
+
+    // ----- 配置 -----
+    var AUTO_PLAY_INTERVAL = 4000;   // 自动播放间隔（毫秒）
+    var TRANSITION_DURATION = 600;   // CSS 过渡时长（毫秒），需与 .carousel-slide transition 一致
+
+    // ----- DOM 引用 -----
+    var slides = carousel.querySelectorAll('.carousel-slide');
+    var dots = carousel.querySelectorAll('.carousel-dot');
+    var arrowLeft = carousel.querySelector('.carousel-arrow--left');
+    var arrowRight = carousel.querySelector('.carousel-arrow--right');
+    var slideCount = slides.length;
+
+    // ----- 状态 -----
+    var currentIndex = 0;    // 当前显示幻灯片索引
+    var timer = null;        // 自动播放定时器句柄
+    var isTransitioning = false; // 过渡锁，防止快速点击导致动画重叠
+
+    // ----- 核心函数 -----
+
+    /**
+     * 切换到指定索引的幻灯片
+     * @param {number} newIndex - 目标索引（0-based）
+     */
+    function goTo(newIndex) {
+        // 边界循环 + 过渡锁
+        if (isTransitioning || newIndex === currentIndex) return;
+        isTransitioning = true;
+
+        // 移除当前激活态
+        slides[currentIndex].classList.remove('active');
+        dots[currentIndex].classList.remove('active');
+
+        // 设置新激活态
+        currentIndex = newIndex;
+        slides[currentIndex].classList.add('active');
+        dots[currentIndex].classList.add('active');
+
+        // 过渡完成后释放锁
+        setTimeout(function () {
+            isTransitioning = false;
+        }, TRANSITION_DURATION);
+    }
+
+    /** 下一张 */
+    function next() {
+        var nextIndex = (currentIndex + 1) % slideCount;
+        goTo(nextIndex);
+    }
+
+    /** 上一张 */
+    function prev() {
+        var prevIndex = (currentIndex - 1 + slideCount) % slideCount;
+        goTo(prevIndex);
+    }
+
+    // ----- 自动播放 -----
+    function startAutoPlay() {
+        stopAutoPlay();
+        timer = setInterval(next, AUTO_PLAY_INTERVAL);
+    }
+
+    function stopAutoPlay() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
+    // ----- 事件绑定 -----
+
+    // 箭头点击
+    if (arrowLeft) {
+        arrowLeft.addEventListener('click', function () {
+            prev();
+            startAutoPlay(); // 手动切换后重置计时器
+        });
+    }
+    if (arrowRight) {
+        arrowRight.addEventListener('click', function () {
+            next();
+            startAutoPlay();
+        });
+    }
+
+    // 指示点点击
+    dots.forEach(function (dot) {
+        dot.addEventListener('click', function () {
+            var targetIndex = parseInt(this.getAttribute('data-index'), 10);
+            if (!isNaN(targetIndex)) {
+                goTo(targetIndex);
+                startAutoPlay();
+            }
+        });
+    });
+
+    // 悬停暂停
+    carousel.addEventListener('mouseenter', function () {
+        stopAutoPlay();
+    });
+    carousel.addEventListener('mouseleave', function () {
+        startAutoPlay();
+    });
+
+    // 页面不可见时暂停，切回时恢复（节省资源）
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            stopAutoPlay();
+        } else {
+            startAutoPlay();
+        }
+    });
+
+    // ----- 启动 -----
+    startAutoPlay();
+})();

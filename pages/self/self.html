@@ -1,12 +1,68 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>标签页标题</title>
-    </head>
-    <body>
-        <p>
+<!-- 学号：2024214572 姓名：杨沛鑫 -->
+<!--
+ * 星云日志 - 关于我页面
+ * 依赖：shared.css（全局样式表）、preview-system.js（预览系统）
+ * 版本：v1.0.0
+ * 功能：个人简介、头像悬停预览、GitHub/Bilibili 跳转
+-->
 
-        </p>
-    </body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    <title>关于我 - 星云日志</title>
+    <link rel="stylesheet" href="/css/shared.css">
+</head>
+
+<body>
+
+    <div class="decor-lines">
+        <div class="line-tl"></div>
+        <div class="line-br"></div>
+    </div>
+
+    <div class="main-container">
+        <a href="../../index.html" class="back-link">← 返回首页</a>
+
+        <header class="header">
+            <h1 class="main-title">关于我</h1>
+            <p class="subtitle">在代码的星海中，点亮属于你的那颗星</p>
+        </header>
+
+        <!-- ==================== 个人主页导航区域（双图源预览） ==================== -->
+        <section class="profile-container">
+            <div class="profile-main">
+                <a href="https://github.com/Ancylx/Ancylx.github.io" target="_blank" rel="noopener"
+                    class="avatar-wrapper preview-trigger" title="查看GitHub项目"
+                    data-preview-src="https://raw.githubusercontent.com/Ancylx/Ancylx.github.io/main/images/profile-avatar/yingchun-00000-1024.png">
+                    <img class="profile-avatar-large" src="https://avatars.githubusercontent.com/u/183050286"
+                        alt="个人头像">
+                </a>
+            </div>
+            <div class="profile-links">
+                <a href="https://github.com/Ancylx" class="profile-button" target="_blank" rel="noopener">
+                    <span class="button-icon">🦊</span>
+                    <span class="button-text">GitHub 主页</span>
+                    <span class="button-arrow">→</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- ==================== 个人简介 ==================== -->
+        <section class="resource-section">
+            <h2 class="section-title">个人简介</h2>
+            <p style="text-align:center;color:var(--text-secondary);line-height:1.8;max-width:600px;margin:0 auto;">
+                你好，我是 Ancylx，一名普通的编程学习者。<br>
+                热爱探索各类技术。<br>
+                这个站点是我学习路上的一份记录，铭刻成长的点滴。<br>
+                欢迎交流，共同进步！
+            </p>
+        </section>
+    </div>
+
+    <script src="/js/preview-system.js"></script>
+</body>
+
 </html>
